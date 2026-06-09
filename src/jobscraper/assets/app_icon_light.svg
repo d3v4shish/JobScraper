@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="JobScraper light icon">
+  <rect width="1024" height="1024" fill="#f4f1e8"/>
+
+  <path d="M228 164h456v612H228z" fill="none" stroke="#000" stroke-width="64" shape-rendering="crispEdges"/>
+  <path d="M324 296h264M324 420h264M324 544h184" stroke="#000" stroke-width="56" stroke-linecap="square"/>
+
+  <circle cx="672" cy="672" r="148" fill="#f4f1e8" stroke="#000" stroke-width="64"/>
+  <circle cx="672" cy="672" r="52" fill="#000"/>
+  <path d="M780 780l116 116" stroke="#000" stroke-width="72" stroke-linecap="square"/>
+</svg>

@@ -1,0 +1,3463 @@
+[
+  {
+    "company": "Anthropic",
+    "ats": "greenhouse",
+    "token": "anthropic",
+    "enabled": true,
+    "tags": [
+      "ai",
+      "systems"
+    ],
+    "notes": "Public Greenhouse board."
+  },
+  {
+    "company": "Cloudflare",
+    "ats": "greenhouse",
+    "token": "cloudflare",
+    "enabled": true,
+    "tags": [
+      "infra",
+      "networking",
+      "systems"
+    ],
+    "notes": "Public Greenhouse board."
+  },
+  {
+    "company": "Stripe",
+    "ats": "greenhouse",
+    "token": "stripe",
+    "enabled": true,
+    "tags": [
+      "fintech",
+      "platform"
+    ],
+    "notes": "Public Greenhouse board."
+  },
+  {
+    "company": "Databricks",
+    "ats": "greenhouse",
+    "token": "databricks",
+    "enabled": true,
+    "tags": [
+      "data",
+      "systems",
+      "python"
+    ],
+    "notes": "Public Greenhouse board."
+  },
+  {
+    "company": "Scale AI",
+    "ats": "greenhouse",
+    "token": "scaleai",
+    "enabled": true,
+    "tags": [
+      "ai",
+      "python"
+    ],
+    "notes": "Public Greenhouse board."
+  },
+  {
+    "company": "Grafana Labs",
+    "ats": "greenhouse",
+    "token": "grafanalabs",
+    "enabled": true,
+    "tags": [
+      "observability",
+      "go",
+      "remote"
+    ],
+    "notes": "Public Greenhouse board."
+  },
+  {
+    "company": "MongoDB",
+    "ats": "greenhouse",
+    "token": "mongodb",
+    "enabled": true,
+    "tags": [
+      "database",
+      "systems"
+    ],
+    "notes": "Public Greenhouse board."
+  },
+  {
+    "company": "Connectly",
+    "ats": "lever",
+    "token": "connectly",
+    "enabled": true,
+    "tags": [
+      "python",
+      "go",
+      "remote"
+    ],
+    "notes": "Public Lever board."
+  },
+  {
+    "company": "Loft Orbital",
+    "ats": "lever",
+    "token": "loftorbital",
+    "enabled": true,
+    "tags": [
+      "systems",
+      "rust",
+      "c++",
+      "space"
+    ],
+    "notes": "Public Lever board."
+  },
+  {
+    "company": "Virta Health",
+    "ats": "ashby",
+    "token": "virtahealth",
+    "enabled": true,
+    "tags": [
+      "health",
+      "python",
+      "remote"
+    ],
+    "notes": "Public Ashby board."
+  },
+  {
+    "company": "Linear",
+    "ats": "ashby",
+    "token": "linear",
+    "enabled": true,
+    "tags": [
+      "product",
+      "remote"
+    ],
+    "notes": "Public Ashby board."
+  },
+  {
+    "company": "PostHog",
+    "ats": "ashby",
+    "token": "posthog",
+    "enabled": true,
+    "tags": [
+      "analytics",
+      "python",
+      "remote"
+    ],
+    "notes": "Public Ashby board."
+  },
+  {
+    "company": "Supabase",
+    "ats": "ashby",
+    "token": "supabase",
+    "enabled": true,
+    "tags": [
+      "database",
+      "rust",
+      "remote"
+    ],
+    "notes": "Public Ashby board."
+  },
+  {
+    "company": "Cursor",
+    "ats": "ashby",
+    "token": "cursor",
+    "enabled": true,
+    "tags": [
+      "ai",
+      "developer-tools"
+    ],
+    "notes": "Public Ashby board."
+  },
+  {
+    "company": "Zed",
+    "ats": "ashby",
+    "token": "zed",
+    "enabled": true,
+    "tags": [
+      "developer-tools",
+      "rust",
+      "systems"
+    ],
+    "notes": "Public Ashby board."
+  },
+  {
+    "company": "Modal",
+    "ats": "ashby",
+    "token": "modal",
+    "enabled": true,
+    "tags": [
+      "infra",
+      "python",
+      "ai"
+    ],
+    "notes": "Public Ashby board."
+  },
+  {
+    "company": "CoreWeave",
+    "ats": "greenhouse",
+    "token": "coreweave",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 255 jobs under expanded interest profile."
+  },
+  {
+    "company": "ClickHouse",
+    "ats": "greenhouse",
+    "token": "clickhouse",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 153 jobs under expanded interest profile."
+  },
+  {
+    "company": "GitLab",
+    "ats": "greenhouse",
+    "token": "gitlab",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 69 jobs under expanded interest profile."
+  },
+  {
+    "company": "Reddit",
+    "ats": "greenhouse",
+    "token": "reddit",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 52 jobs under expanded interest profile."
+  },
+  {
+    "company": "Waabi",
+    "ats": "lever",
+    "token": "waabi",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 44 jobs under expanded interest profile."
+  },
+  {
+    "company": "BillionToOne",
+    "ats": "greenhouse",
+    "token": "billiontoone",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 41 jobs under expanded interest profile."
+  },
+  {
+    "company": "Interactive Brokers",
+    "ats": "greenhouse",
+    "token": "ibkr",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 40 jobs under expanded interest profile."
+  },
+  {
+    "company": "Tailscale",
+    "ats": "greenhouse",
+    "token": "tailscale",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse",
+      "networking"
+    ],
+    "notes": "Validated public Greenhouse board; matched 37 jobs under expanded interest profile."
+  },
+  {
+    "company": "Figma",
+    "ats": "greenhouse",
+    "token": "figma",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 34 jobs under expanded interest profile."
+  },
+  {
+    "company": "Grow Therapy",
+    "ats": "greenhouse",
+    "token": "growtherapy",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 25 jobs under expanded interest profile."
+  },
+  {
+    "company": "Monzo",
+    "ats": "greenhouse",
+    "token": "monzo",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 21 jobs under expanded interest profile."
+  },
+  {
+    "company": "SentiLink",
+    "ats": "ashby",
+    "token": "sentilink",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 21 jobs under expanded interest profile."
+  },
+  {
+    "company": "Fluidstack",
+    "ats": "ashby",
+    "token": "fluidstack",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 15 jobs under expanded interest profile."
+  },
+  {
+    "company": "10x Genomics",
+    "ats": "greenhouse",
+    "token": "10xgenomics",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 15 jobs under expanded interest profile."
+  },
+  {
+    "company": "LiveKit",
+    "ats": "ashby",
+    "token": "livekit",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby",
+      "networking"
+    ],
+    "notes": "Validated public Ashby board; matched 15 jobs under expanded interest profile."
+  },
+  {
+    "company": "7shifts",
+    "ats": "greenhouse",
+    "token": "7shifts",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 12 jobs under expanded interest profile."
+  },
+  {
+    "company": "SigNoz",
+    "ats": "ashby",
+    "token": "SigNoz",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 12 jobs under expanded interest profile."
+  },
+  {
+    "company": "Redpanda",
+    "ats": "greenhouse",
+    "token": "redpandadata",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 11 jobs under expanded interest profile."
+  },
+  {
+    "company": "Maven Clinic",
+    "ats": "greenhouse",
+    "token": "mavenclinic",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 10 jobs under expanded interest profile."
+  },
+  {
+    "company": "Olo",
+    "ats": "lever",
+    "token": "olo",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 10 jobs under expanded interest profile."
+  },
+  {
+    "company": "KnowBe4",
+    "ats": "greenhouse",
+    "token": "knowbe4",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse",
+      "security"
+    ],
+    "notes": "Validated public Greenhouse board; matched 9 jobs under expanded interest profile."
+  },
+  {
+    "company": "Baseten",
+    "ats": "ashby",
+    "token": "baseten",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 9 jobs under expanded interest profile."
+  },
+  {
+    "company": "Metabase",
+    "ats": "lever",
+    "token": "metabase",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 9 jobs under expanded interest profile."
+  },
+  {
+    "company": "G2i",
+    "ats": "ashby",
+    "token": "g2i",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 9 jobs under expanded interest profile."
+  },
+  {
+    "company": "FloQast",
+    "ats": "lever",
+    "token": "floqast",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 8 jobs under expanded interest profile."
+  },
+  {
+    "company": "ID.me",
+    "ats": "greenhouse",
+    "token": "idme",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 8 jobs under expanded interest profile."
+  },
+  {
+    "company": "Altimate AI",
+    "ats": "ashby",
+    "token": "altimate",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 8 jobs under expanded interest profile."
+  },
+  {
+    "company": "Flagler Health",
+    "ats": "ashby",
+    "token": "flaglerhealth",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 8 jobs under expanded interest profile."
+  },
+  {
+    "company": "Lightning Labs",
+    "ats": "ashby",
+    "token": "lightning",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 7 jobs under expanded interest profile."
+  },
+  {
+    "company": "Replit",
+    "ats": "ashby",
+    "token": "replit",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 6 jobs under expanded interest profile."
+  },
+  {
+    "company": "Halcyon",
+    "ats": "greenhouse",
+    "token": "halcyon",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse",
+      "security"
+    ],
+    "notes": "Validated public Greenhouse board; matched 6 jobs under expanded interest profile."
+  },
+  {
+    "company": "Oneleet",
+    "ats": "ashby",
+    "token": "oneleet",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby",
+      "security"
+    ],
+    "notes": "Validated public Ashby board; matched 6 jobs under expanded interest profile."
+  },
+  {
+    "company": "Shield AI",
+    "ats": "lever",
+    "token": "shieldai",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Ironclad",
+    "ats": "ashby",
+    "token": "ironcladhq",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Simbe Robotics",
+    "ats": "lever",
+    "token": "SimbeRobotics",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Close",
+    "ats": "ashby",
+    "token": "Close",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "DuckDuckGo",
+    "ats": "ashby",
+    "token": "duck-duck-go",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Monad Foundation",
+    "ats": "ashby",
+    "token": "monad.foundation",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Solo.io",
+    "ats": "greenhouse",
+    "token": "soloioinc",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Railway",
+    "ats": "ashby",
+    "token": "Railway",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "SpruceID",
+    "ats": "lever",
+    "token": "sprucesystems",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "P2P.org",
+    "ats": "ashby",
+    "token": "p2p.org",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Quora",
+    "ats": "ashby",
+    "token": "quora",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Sourcegraph",
+    "ats": "greenhouse",
+    "token": "sourcegraph91",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Iterative",
+    "ats": "lever",
+    "token": "iterative",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 5 jobs under expanded interest profile."
+  },
+  {
+    "company": "Qualia",
+    "ats": "greenhouse",
+    "token": "qualia",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 4 jobs under expanded interest profile."
+  },
+  {
+    "company": "Domino Data Lab",
+    "ats": "greenhouse",
+    "token": "dominodatalab",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 4 jobs under expanded interest profile."
+  },
+  {
+    "company": "Sparrow",
+    "ats": "greenhouse",
+    "token": "sparrow",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 4 jobs under expanded interest profile."
+  },
+  {
+    "company": "Stream",
+    "ats": "ashby",
+    "token": "stream",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 4 jobs under expanded interest profile."
+  },
+  {
+    "company": "Pareto AI",
+    "ats": "ashby",
+    "token": "pareto-ai",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 4 jobs under expanded interest profile."
+  },
+  {
+    "company": "Imprint",
+    "ats": "ashby",
+    "token": "imprint",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "Life360",
+    "ats": "greenhouse",
+    "token": "life360",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "Ontic",
+    "ats": "ashby",
+    "token": "Ontic",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "AllSpice",
+    "ats": "ashby",
+    "token": "allspice",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "Clarium",
+    "ats": "ashby",
+    "token": "clarium",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "CoinTracker",
+    "ats": "ashby",
+    "token": "cointracker",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "River",
+    "ats": "ashby",
+    "token": "river",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "Dagster Labs",
+    "ats": "greenhouse",
+    "token": "dagsterlabs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "Interactive Brokers External",
+    "ats": "greenhouse",
+    "token": "ibkrexternal",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "Moonsong Labs",
+    "ats": "lever",
+    "token": "moonsong-labs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 3 jobs under expanded interest profile."
+  },
+  {
+    "company": "Cabify",
+    "ats": "greenhouse",
+    "token": "cabify",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "Coder",
+    "ats": "ashby",
+    "token": "Coder",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "HomeVision",
+    "ats": "ashby",
+    "token": "homevision",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "Dune",
+    "ats": "ashby",
+    "token": "dune",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "15Five",
+    "ats": "lever",
+    "token": "15five",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "TeamSnap",
+    "ats": "lever",
+    "token": "teamsnap",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "Airtame",
+    "ats": "greenhouse",
+    "token": "airtamejobs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "Trellis",
+    "ats": "lever",
+    "token": "trellis",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "backend",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; matched 2 jobs under expanded interest profile."
+  },
+  {
+    "company": "Pure Storage",
+    "ats": "greenhouse",
+    "token": "purestorage",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "storage",
+      "greenhouse",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Validated public Greenhouse board; strong storage focus and significant engineering presence in Bengaluru."
+  },
+  {
+    "company": "Rubrik",
+    "ats": "greenhouse",
+    "token": "rubrik",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "storage",
+      "security",
+      "greenhouse",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Validated public Greenhouse board; storage and security company with a major Bengaluru engineering base."
+  },
+  {
+    "company": "Elastic",
+    "ats": "greenhouse",
+    "token": "elastic",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "storage",
+      "search",
+      "greenhouse",
+      "distributed-systems"
+    ],
+    "notes": "Validated public Greenhouse board; matched heavily under storage, search, and distributed systems interests."
+  },
+  {
+    "company": "Datadog",
+    "ats": "greenhouse",
+    "token": "datadog",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "observability",
+      "infra",
+      "greenhouse",
+      "big-tech"
+    ],
+    "notes": "Validated public Greenhouse board; large backend and infrastructure job volume."
+  },
+  {
+    "company": "Twilio",
+    "ats": "greenhouse",
+    "token": "twilio",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "communications",
+      "platform",
+      "greenhouse",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Validated public Greenhouse board; major engineering employer with Bengaluru presence."
+  },
+  {
+    "company": "Airbnb",
+    "ats": "greenhouse",
+    "token": "airbnb",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "big-tech",
+      "maang",
+      "greenhouse",
+      "backend"
+    ],
+    "notes": "Validated public Greenhouse board; high current match volume for backend and platform roles."
+  },
+  {
+    "company": "Cockroach Labs",
+    "ats": "greenhouse",
+    "token": "cockroachlabs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "database",
+      "storage",
+      "greenhouse",
+      "distributed-systems"
+    ],
+    "notes": "Validated public Greenhouse board; strong fit for distributed database and storage work."
+  },
+  {
+    "company": "Cloudian",
+    "ats": "greenhouse",
+    "token": "cloudian",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "storage",
+      "object-storage",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; object storage focused source."
+  },
+  {
+    "company": "Materialize",
+    "ats": "greenhouse",
+    "token": "materialize",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "database",
+      "streaming",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; relevant for streaming systems and database work."
+  },
+  {
+    "company": "Robinhood",
+    "ats": "greenhouse",
+    "token": "robinhood",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "fintech",
+      "greenhouse",
+      "backend"
+    ],
+    "notes": "Validated public Greenhouse board; finance-oriented backend source under the existing adapters."
+  },
+  {
+    "company": "Signal",
+    "ats": "lever",
+    "token": "signal",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "security",
+      "networking",
+      "lever"
+    ],
+    "notes": "Validated public Lever board; small but relevant for secure networking work."
+  },
+  {
+    "company": "Cisco",
+    "ats": "workday",
+    "url": "https://cisco.wd5.myworkdayjobs.com/en-US/Cisco_Careers",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "networking",
+      "workday",
+      "bangalore",
+      "india",
+      "big-tech"
+    ],
+    "notes": "Validated public Workday board; strong networking and systems fit with major Bengaluru hiring."
+  },
+  {
+    "company": "Broadcom",
+    "ats": "workday",
+    "url": "https://broadcom.wd1.myworkdayjobs.com/en-US/External_Career",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "networking",
+      "storage",
+      "security",
+      "workday",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Validated public Workday board; relevant for networking, storage, and infrastructure roles."
+  },
+  {
+    "company": "HPE",
+    "ats": "workday",
+    "url": "https://hpe.wd5.myworkdayjobs.com/en-US/Jobsathpe",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "storage",
+      "infrastructure",
+      "workday",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Validated public Workday board; major storage and infrastructure employer with Bengaluru hiring."
+  },
+  {
+    "company": "NVIDIA",
+    "ats": "workday",
+    "url": "https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "hpc",
+      "workday",
+      "bangalore",
+      "india",
+      "big-tech"
+    ],
+    "notes": "Validated public Workday board; large Bengaluru engineering footprint with systems and HPC roles."
+  },
+  {
+    "company": "Nasdaq",
+    "ats": "workday",
+    "url": "https://nasdaq.wd1.myworkdayjobs.com/en-US/Global_External_Site",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "fintech",
+      "hft-adjacent",
+      "workday",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Validated public Workday board; finance and exchange infrastructure source with Bengaluru roles."
+  },
+  {
+    "company": "CME Group",
+    "ats": "workday",
+    "url": "https://cmegroup.wd1.myworkdayjobs.com/en-US/cme_careers",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "fintech",
+      "hft-adjacent",
+      "workday"
+    ],
+    "notes": "Validated public Workday board; derivatives exchange infrastructure source."
+  },
+  {
+    "company": "Visa",
+    "ats": "smartrecruiters",
+    "url": "https://careers.smartrecruiters.com/Visa",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "payments",
+      "smartrecruiters",
+      "bangalore",
+      "india",
+      "big-tech"
+    ],
+    "notes": "Validated public SmartRecruiters board; strong Bangalore engineering presence and payments infrastructure roles."
+  },
+  {
+    "company": "Google",
+    "ats": "google",
+    "url": "https://www.google.com/about/careers/applications/jobs/results/",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "big-tech",
+      "faang",
+      "google",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Public Google Careers results pages with detail pages. Strong fit for major-company and Bengaluru hiring."
+  },
+  {
+    "company": "Netflix",
+    "ats": "eightfold",
+    "url": "https://explore.jobs.netflix.net/careers",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "maang",
+      "netflix",
+      "eightfold",
+      "backend",
+      "distributed-systems"
+    ],
+    "notes": "Public Netflix Eightfold careers pages. Current adapter uses embedded listing payloads plus detail-page JSON-LD."
+  },
+  {
+    "company": "Dropbox",
+    "ats": "greenhouse",
+    "token": "dropbox",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "storage",
+      "cloud",
+      "greenhouse",
+      "major-company"
+    ],
+    "notes": "Validated public Greenhouse board; relevant for storage, sync, and platform work."
+  },
+  {
+    "company": "Tower Research Capital",
+    "ats": "greenhouse",
+    "token": "towerresearchcapital",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "greenhouse",
+      "global"
+    ],
+    "notes": "Validated public Greenhouse board from the official careers page embed."
+  },
+  {
+    "company": "Optiver",
+    "ats": "optiver",
+    "url": "https://optiver.com/working-at-optiver/career-opportunities/",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "market-making",
+      "global"
+    ],
+    "notes": "Public Optiver careers listing and detail pages with strong low-latency and systems relevance."
+  },
+  {
+    "company": "DRW",
+    "ats": "drw",
+    "url": "https://www.drw.com/work-at-drw/listings/",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "global",
+      "python",
+      "c++"
+    ],
+    "notes": "Public DRW listings pages with embedded job slugs and detailed engineering descriptions."
+  },
+  {
+    "company": "G-Research",
+    "ats": "gresearch",
+    "url": "https://www.gresearch.com/vacancies/",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "quant",
+      "trading",
+      "research",
+      "global"
+    ],
+    "notes": "Public G-Research vacancies pages with JobPosting schema and strong systems, platform, and quantitative engineering roles."
+  },
+  {
+    "company": "Jane Street",
+    "ats": "greenhouse",
+    "token": "janestreet",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "market-making",
+      "greenhouse",
+      "global"
+    ],
+    "notes": "Validated public Greenhouse board; high-signal HFT source."
+  },
+  {
+    "company": "Jump Trading",
+    "ats": "greenhouse",
+    "token": "jumptrading",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "greenhouse",
+      "global"
+    ],
+    "notes": "Validated public Greenhouse board; HFT and trading infrastructure source."
+  },
+  {
+    "company": "IMC Trading",
+    "ats": "greenhouse",
+    "token": "imc",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "market-making",
+      "greenhouse",
+      "global"
+    ],
+    "notes": "Validated public Greenhouse board; market-making and low-latency systems source."
+  },
+  {
+    "company": "Virtu Financial",
+    "ats": "greenhouse",
+    "token": "virtu",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "market-making",
+      "greenhouse",
+      "global"
+    ],
+    "notes": "Validated public Greenhouse board; electronic market-making and trading systems source."
+  },
+  {
+    "company": "Flow Traders",
+    "ats": "greenhouse",
+    "token": "flowtraders",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "market-making",
+      "greenhouse",
+      "global"
+    ],
+    "notes": "Validated public Greenhouse board; trading and market-making source."
+  },
+  {
+    "company": "Warp",
+    "ats": "ashby",
+    "token": "warp",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "remote-friendly",
+      "devtools",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; devtools and systems-adjacent startup."
+  },
+  {
+    "company": "Clerk",
+    "ats": "ashby",
+    "token": "clerk",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "remote-friendly",
+      "backend",
+      "security",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; authentication and backend platform startup."
+  },
+  {
+    "company": "PlanetScale",
+    "ats": "greenhouse",
+    "token": "planetscale",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "database",
+      "storage",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; database and storage systems startup."
+  },
+  {
+    "company": "Neon",
+    "ats": "ashby",
+    "token": "neon",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "database",
+      "postgres",
+      "storage",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; Postgres and cloud database source."
+  },
+  {
+    "company": "Socket",
+    "ats": "ashby",
+    "token": "socket",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "security",
+      "supply-chain",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; software supply-chain security startup."
+  },
+  {
+    "company": "Chainguard",
+    "ats": "greenhouse",
+    "token": "chainguard",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "security",
+      "linux",
+      "infrastructure",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; secure software supply-chain and Linux/container infrastructure source."
+  },
+  {
+    "company": "RunPod",
+    "ats": "greenhouse",
+    "token": "runpod",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "gpu",
+      "infrastructure",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; GPU cloud and infrastructure startup."
+  },
+  {
+    "company": "Together AI",
+    "ats": "greenhouse",
+    "token": "togetherai",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "ai-infra",
+      "distributed-systems",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; AI infrastructure and distributed systems source."
+  },
+  {
+    "company": "Fireworks AI",
+    "ats": "greenhouse",
+    "token": "fireworksai",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "ai-infra",
+      "systems",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; AI inference infrastructure source."
+  },
+  {
+    "company": "LangChain",
+    "ats": "ashby",
+    "token": "langchain",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "ai",
+      "backend",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; AI application infrastructure and backend source."
+  },
+  {
+    "company": "Graphite",
+    "ats": "ashby",
+    "token": "graphite",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "devtools",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board; developer workflow startup."
+  },
+  {
+    "company": "Axiom",
+    "ats": "greenhouse",
+    "token": "axiom",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "startup",
+      "observability",
+      "infrastructure",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board; observability and infrastructure source."
+  },
+  {
+    "company": "Microsoft",
+    "ats": "microsoft_careers",
+    "url": "https://apply.careers.microsoft.com/careers?start=0&sort_by=solr&filter_profession=software+engineering",
+    "entry_url": "https://apply.careers.microsoft.com/careers?start=0&sort_by=solr&filter_profession=software+engineering",
+    "enabled": true,
+    "portal": "microsoft_careers",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "official",
+      "big-tech",
+      "maang",
+      "microsoft",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Official public Microsoft Careers adapter using the apply.careers.microsoft.com search and position-details APIs.",
+    "discovery_notes": "No login required. Uses direct JSON endpoints captured from the public careers frontend."
+  },
+  {
+    "company": "Amazon",
+    "ats": "amazon_jobs",
+    "url": "https://www.amazon.jobs/en/search.json?base_query=software%20engineer&loc_query=&sort=relevant",
+    "entry_url": "https://www.amazon.jobs/en/search?base_query=software%20engineer&loc_query=",
+    "enabled": true,
+    "portal": "amazon_jobs",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "official",
+      "big-tech",
+      "faang",
+      "amazon",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Official public Amazon Jobs adapter using the search.json feed.",
+    "discovery_notes": "No login required. Uses direct JSON returned by the public Amazon Jobs search endpoint."
+  },
+  {
+    "company": "Apple",
+    "ats": "apple_jobs",
+    "url": "https://jobs.apple.com/en-us/search?search=software%20engineer&location=united-states-USA",
+    "entry_url": "https://jobs.apple.com/en-us/search?search=software%20engineer&location=united-states-USA",
+    "enabled": true,
+    "portal": "apple_jobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "official",
+      "big-tech",
+      "faang",
+      "apple",
+      "bangalore",
+      "india"
+    ],
+    "notes": "Official public Apple Jobs adapter using server-rendered search links and detail-page hydration data.",
+    "discovery_notes": "No login required. Detail pages embed structured job data in the public hydration payload."
+  },
+  {
+    "company": "Old Mission",
+    "ats": "greenhouse",
+    "token": "oldmissioncapital",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "hft",
+      "trading",
+      "systems",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Old Mission careers."
+  },
+  {
+    "company": "Ema",
+    "ats": "ashby",
+    "token": "ema",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "ai",
+      "bangalore",
+      "hybrid",
+      "python",
+      "go"
+    ],
+    "notes": "Public Ashby board. Current postings include Bangalore hybrid engineering roles."
+  },
+  {
+    "company": "Perplexity",
+    "ats": "ashby",
+    "token": "perplexity",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "ai",
+      "remote",
+      "search",
+      "systems"
+    ],
+    "notes": "Public Ashby board for a fast-growing AI/search startup."
+  },
+  {
+    "company": "Pinecone",
+    "ats": "ashby",
+    "token": "Pinecone",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "vector-db",
+      "systems",
+      "remote",
+      "infra"
+    ],
+    "notes": "Public Ashby board for a vector database startup."
+  },
+  {
+    "company": "Writer",
+    "ats": "ashby",
+    "token": "writer",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "ai",
+      "remote",
+      "platform"
+    ],
+    "notes": "Public Ashby board for an enterprise AI startup."
+  },
+  {
+    "company": "DevRev",
+    "ats": "greenhouse",
+    "token": "devrev",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "bangalore",
+      "hybrid",
+      "platform",
+      "ai"
+    ],
+    "notes": "Public Greenhouse board with India engineering presence."
+  },
+  {
+    "company": "Observe.AI",
+    "ats": "greenhouse",
+    "token": "observeai",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "bangalore",
+      "hybrid",
+      "ai",
+      "platform"
+    ],
+    "notes": "Public Greenhouse board with India engineering roles."
+  },
+  {
+    "company": "Glean",
+    "ats": "greenhouse",
+    "token": "gleanwork",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "remote",
+      "ai",
+      "search",
+      "platform"
+    ],
+    "notes": "Public Greenhouse board for a well-known enterprise search startup."
+  },
+  {
+    "company": "Vercel",
+    "ats": "greenhouse",
+    "token": "vercel",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "remote",
+      "platform",
+      "frontend",
+      "infra"
+    ],
+    "notes": "Public Greenhouse board with multiple remote roles."
+  },
+  {
+    "company": "Temporal",
+    "ats": "greenhouse",
+    "token": "temporaltechnologies",
+    "enabled": true,
+    "tags": [
+      "startup",
+      "remote",
+      "distributed-systems",
+      "backend",
+      "infra"
+    ],
+    "notes": "Public Greenhouse board for a distributed systems platform company."
+  },
+  {
+    "company": "Abnormal Security",
+    "ats": "greenhouse",
+    "token": "abnormalsecurity",
+    "enabled": true,
+    "tags": [
+      "cybersecurity",
+      "startup",
+      "remote",
+      "platform"
+    ],
+    "notes": "Public Greenhouse board for a large cybersecurity startup."
+  },
+  {
+    "company": "Cribl",
+    "ats": "greenhouse",
+    "token": "cribl",
+    "enabled": true,
+    "tags": [
+      "observability",
+      "security",
+      "remote",
+      "platform",
+      "infra"
+    ],
+    "notes": "Public Greenhouse board for observability and telemetry infrastructure."
+  },
+  {
+    "company": "Cato Networks",
+    "ats": "greenhouse",
+    "token": "catonetworks",
+    "enabled": true,
+    "tags": [
+      "networking",
+      "cybersecurity",
+      "startup",
+      "global"
+    ],
+    "notes": "Public Greenhouse board for a network security platform company."
+  },
+  {
+    "company": "Aviatrix",
+    "ats": "greenhouse",
+    "token": "aviatrix",
+    "enabled": true,
+    "tags": [
+      "networking",
+      "cloud",
+      "startup",
+      "infra"
+    ],
+    "notes": "Public Greenhouse board for a cloud networking company."
+  },
+  {
+    "company": "Yugabyte",
+    "ats": "greenhouse",
+    "token": "yugabyte",
+    "enabled": true,
+    "tags": [
+      "database",
+      "distributed-systems",
+      "startup",
+      "remote"
+    ],
+    "notes": "Public Greenhouse board for a distributed SQL database company."
+  },
+  {
+    "company": "DV Trading",
+    "ats": "greenhouse",
+    "token": "dvtrading",
+    "enabled": true,
+    "tags": [
+      "hft",
+      "trading",
+      "quant",
+      "systems"
+    ],
+    "notes": "Public Greenhouse board for a proprietary trading firm."
+  },
+  {
+    "company": "Geneva Trading",
+    "ats": "greenhouse",
+    "token": "genevatrading",
+    "enabled": true,
+    "tags": [
+      "hft",
+      "trading",
+      "quant",
+      "systems"
+    ],
+    "notes": "Public Greenhouse board for a proprietary trading firm."
+  },
+  {
+    "company": "Mako Trading",
+    "ats": "greenhouse",
+    "token": "mako",
+    "enabled": true,
+    "tags": [
+      "hft",
+      "trading",
+      "quant",
+      "systems"
+    ],
+    "notes": "Public Greenhouse board for a proprietary trading firm."
+  },
+  {
+    "company": "Semgrep",
+    "ats": "ashby",
+    "token": "semgrep",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "startup",
+      "remote",
+      "ashby"
+    ],
+    "notes": "Remapped from stale Greenhouse token to validated public Ashby board."
+  },
+  {
+    "company": "Netskope",
+    "ats": "greenhouse",
+    "token": "netskope",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "networking",
+      "bangalore",
+      "enterprise",
+      "greenhouse"
+    ],
+    "notes": "Converted from browser discovery to validated public Greenhouse board.",
+    "discovery_notes": "SmartRecruiters token returned low-quality placeholder rows; Greenhouse is the direct source."
+  },
+  {
+    "company": "Zscaler",
+    "ats": "greenhouse",
+    "token": "zscaler",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "networking",
+      "enterprise",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Zscaler careers."
+  },
+  {
+    "company": "Vanta",
+    "ats": "ashby",
+    "token": "vanta",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "startup",
+      "remote",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for Vanta careers."
+  },
+  {
+    "company": "Drata",
+    "ats": "ashby",
+    "token": "drata",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "startup",
+      "remote",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for Drata careers."
+  },
+  {
+    "company": "Obsidian Security",
+    "ats": "greenhouse",
+    "token": "obsidiansecurity",
+    "enabled": true,
+    "tags": [
+      "security",
+      "startup",
+      "platform",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for SaaS security engineering roles."
+  },
+  {
+    "company": "Snyk",
+    "ats": "greenhouse",
+    "token": "snyk",
+    "enabled": false,
+    "tags": [
+      "security",
+      "developer-tools",
+      "platform",
+      "greenhouse"
+    ],
+    "notes": "Disabled: previously configured Greenhouse token now returns 404 and no replacement public ATS token was verified."
+  },
+  {
+    "company": "LaunchDarkly",
+    "ats": "greenhouse",
+    "token": "launchdarkly",
+    "enabled": true,
+    "tags": [
+      "platform",
+      "developer-tools",
+      "remote",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for feature-flag and developer platform roles."
+  },
+  {
+    "company": "Redpanda Data",
+    "ats": "greenhouse",
+    "token": "redpandadata",
+    "enabled": true,
+    "tags": [
+      "streaming",
+      "infrastructure",
+      "distributed-systems",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for streaming and data infrastructure roles."
+  },
+  {
+    "company": "Postman",
+    "ats": "greenhouse",
+    "token": "postman",
+    "enabled": true,
+    "tags": [
+      "developer-tools",
+      "platform",
+      "api",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for API platform roles."
+  },
+  {
+    "company": "Benchling",
+    "ats": "ashby",
+    "token": "benchling",
+    "enabled": true,
+    "tags": [
+      "platform",
+      "data",
+      "biology",
+      "ashby"
+    ],
+    "notes": "Remapped from stale Greenhouse token to validated public Ashby board."
+  },
+  {
+    "company": "Anduril",
+    "ats": "greenhouse",
+    "token": "andurilindustries",
+    "enabled": true,
+    "tags": [
+      "defense",
+      "systems",
+      "security",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for defense systems engineering roles."
+  },
+  {
+    "company": "dbt Labs",
+    "ats": "greenhouse",
+    "token": "dbtlabsinc",
+    "enabled": true,
+    "tags": [
+      "data",
+      "analytics",
+      "platform",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for analytics engineering and platform roles."
+  },
+  {
+    "company": "Render",
+    "ats": "ashby",
+    "token": "render",
+    "enabled": true,
+    "tags": [
+      "cloud",
+      "infrastructure",
+      "remote",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for cloud platform roles."
+  },
+  {
+    "company": "Notion",
+    "ats": "ashby",
+    "token": "notion",
+    "enabled": true,
+    "tags": [
+      "productivity",
+      "platform",
+      "ai",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for platform and AI roles."
+  },
+  {
+    "company": "Ramp",
+    "ats": "ashby",
+    "token": "ramp",
+    "enabled": true,
+    "tags": [
+      "fintech",
+      "platform",
+      "infrastructure",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for finance infrastructure roles."
+  },
+  {
+    "company": "incident.io",
+    "ats": "ashby",
+    "token": "incident",
+    "enabled": true,
+    "tags": [
+      "reliability",
+      "platform",
+      "go",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for incident response and reliability roles."
+  },
+  {
+    "company": "Sentry",
+    "ats": "ashby",
+    "token": "sentry",
+    "enabled": true,
+    "tags": [
+      "observability",
+      "platform",
+      "hybrid",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for observability and data platform roles."
+  },
+  {
+    "company": "Lumos",
+    "ats": "ashby",
+    "token": "lumos",
+    "enabled": true,
+    "tags": [
+      "security",
+      "identity",
+      "platform",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for identity and access platform roles."
+  },
+  {
+    "company": "Airwallex",
+    "ats": "ashby",
+    "token": "airwallex",
+    "enabled": true,
+    "tags": [
+      "fintech",
+      "payments",
+      "platform",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for global payments and infrastructure roles."
+  },
+  {
+    "company": "OpenAI",
+    "ats": "ashby",
+    "token": "openai",
+    "enabled": true,
+    "tags": [
+      "ai",
+      "systems",
+      "platform",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for frontier AI systems roles."
+  },
+  {
+    "company": "Teleport",
+    "ats": "lever",
+    "token": "teleport",
+    "enabled": true,
+    "tags": [
+      "security",
+      "infrastructure",
+      "go",
+      "lever"
+    ],
+    "notes": "Validated public Lever board for infrastructure identity and access roles."
+  },
+  {
+    "company": "Plaid",
+    "ats": "lever",
+    "token": "plaid",
+    "enabled": true,
+    "tags": [
+      "fintech",
+      "platform",
+      "data",
+      "lever"
+    ],
+    "notes": "Validated public Lever board for fintech platform roles."
+  },
+  {
+    "company": "Outreach",
+    "ats": "lever",
+    "token": "outreach",
+    "enabled": true,
+    "tags": [
+      "saas",
+      "platform",
+      "go",
+      "lever"
+    ],
+    "notes": "Validated public Lever board for SaaS platform engineering roles."
+  },
+  {
+    "company": "Pylon",
+    "ats": "ashby",
+    "token": "pylon",
+    "enabled": true,
+    "tags": [
+      "fintech",
+      "startup",
+      "platform",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for mortgage infrastructure engineering roles."
+  },
+  {
+    "company": "Pylon Labs",
+    "ats": "ashby",
+    "token": "pylon-labs",
+    "enabled": true,
+    "tags": [
+      "saas",
+      "platform",
+      "startup",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for post-sales support platform roles."
+  },
+  {
+    "company": "Cognition",
+    "ats": "ashby",
+    "token": "cognition",
+    "enabled": true,
+    "tags": [
+      "ai",
+      "agents",
+      "systems",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for AI agent engineering roles."
+  },
+  {
+    "company": "Highbeam",
+    "ats": "ashby",
+    "token": "highbeam",
+    "enabled": true,
+    "tags": [
+      "fintech",
+      "startup",
+      "platform",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for fintech platform roles."
+  },
+  {
+    "company": "Concourse",
+    "ats": "ashby",
+    "token": "concourse",
+    "enabled": true,
+    "tags": [
+      "ai",
+      "finance",
+      "startup",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for AI finance infrastructure roles."
+  },
+  {
+    "company": "Roadrunner",
+    "ats": "ashby",
+    "token": "Roadrunner",
+    "enabled": true,
+    "tags": [
+      "enterprise",
+      "pricing",
+      "startup",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for enterprise pricing infrastructure roles."
+  },
+  {
+    "company": "Dice Remote Software",
+    "ats": "dice_search",
+    "url": "https://www.dice.com/jobs?q=software%20engineer&location=Remote&radius=30&radiusUnit=mi&page=1&pageSize=20",
+    "entry_url": "https://www.dice.com/jobs?q=software%20engineer&location=Remote&radius=30&radiusUnit=mi&page=1&pageSize=20",
+    "enabled": true,
+    "portal": "dice",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "dice",
+      "tech",
+      "remote",
+      "public"
+    ],
+    "notes": "Public Dice search page. The adapter follows Dice job-detail links and normalizes JobPosting JSON-LD from detail pages.",
+    "discovery_notes": "Direct HTML and JSON-LD only; disable or replace if Dice changes the static result payload.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python",
+      "go",
+      "rust",
+      "devops"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Remotive Remote Jobs",
+    "ats": "remotive_api",
+    "url": "https://remotive.com/api/remote-jobs",
+    "entry_url": "https://remotive.com/remote-jobs/software-dev",
+    "enabled": true,
+    "portal": "remotive",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "remotive",
+      "remote",
+      "api",
+      "public"
+    ],
+    "notes": "Public Remotive remote jobs API.",
+    "discovery_notes": "Direct JSON API; no browser session required.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python",
+      "go",
+      "rust",
+      "devops"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "RemoteOK Remote Jobs",
+    "ats": "remoteok_api",
+    "url": "https://remoteok.com/api",
+    "entry_url": "https://remoteok.com/remote-dev-jobs",
+    "enabled": true,
+    "portal": "remoteok",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "remoteok",
+      "remote",
+      "api",
+      "public"
+    ],
+    "notes": "Public RemoteOK API feed.",
+    "discovery_notes": "Direct JSON API; keeps RemoteOK job URLs for attribution.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python",
+      "go",
+      "rust",
+      "devops"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "PowerToFly Software Jobs",
+    "ats": "powertofly_search",
+    "url": "https://powertofly.com/api/v1/jobs/search/",
+    "entry_url": "https://powertofly.com/jobs/?keywords=software%20engineer&location=Remote",
+    "enabled": true,
+    "portal": "powertofly",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "powertofly",
+      "remote",
+      "api",
+      "public"
+    ],
+    "notes": "Public PowerToFly jobs search endpoint.",
+    "discovery_notes": "Direct JSON endpoint used by the public jobs UI.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python"
+    ],
+    "locations": [
+      "Remote"
+    ]
+  },
+  {
+    "company": "SkipTheDrive Software Jobs",
+    "ats": "skipthedrive_search",
+    "url": "https://www.skipthedrive.com/?s=software+engineer",
+    "entry_url": "https://www.skipthedrive.com/?s=software+engineer",
+    "enabled": true,
+    "portal": "skipthedrive",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "skipthedrive",
+      "remote",
+      "public"
+    ],
+    "notes": "Public SkipTheDrive search page.",
+    "discovery_notes": "Follows /job/ result links and normalizes detail pages.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Authentic Jobs Software",
+    "ats": "authenticjobs_wp",
+    "url": "https://authenticjobs.com/wp-json/wp/v2/job-listings?per_page=100",
+    "entry_url": "https://authenticjobs.com/?post_type=job_listing",
+    "enabled": true,
+    "portal": "authenticjobs",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "authenticjobs",
+      "wordpress",
+      "public"
+    ],
+    "notes": "Authentic Jobs WordPress job-listing API.",
+    "discovery_notes": "Uses wp-json job-listings with search terms.",
+    "search_terms": [
+      "software engineer",
+      "developer",
+      "backend"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "We Work Remotely Programming",
+    "ats": "weworkremotely_rss",
+    "url": "https://weworkremotely.com/categories/remote-programming-jobs.rss",
+    "entry_url": "https://weworkremotely.com/remote-programming-jobs",
+    "enabled": true,
+    "portal": "weworkremotely",
+    "entry_kind": "public_rss",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "weworkremotely",
+      "remote",
+      "rss",
+      "public"
+    ],
+    "notes": "We Work Remotely public programming RSS feed.",
+    "discovery_notes": "RSS feed is public and attribution links are retained.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python",
+      "go",
+      "rust"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Arbeitnow Public Jobs API",
+    "ats": "arbeitnow_api",
+    "url": "https://www.arbeitnow.com/api/job-board-api",
+    "entry_url": "https://www.arbeitnow.com/jobs",
+    "enabled": true,
+    "portal": "arbeitnow",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "arbeitnow",
+      "remote",
+      "api",
+      "public"
+    ],
+    "notes": "Public API source. The adapter normalizes the first API page; normal scrape filters decide which jobs remain interesting.",
+    "discovery_notes": "Direct JSON API with no browser session required.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Python.org Jobs",
+    "ats": "python_jobs_search",
+    "url": "https://www.python.org/jobs/",
+    "entry_url": "https://www.python.org/jobs/",
+    "enabled": false,
+    "portal": "python_jobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "python_jobs",
+      "python",
+      "public"
+    ],
+    "notes": "Attached but disabled until scrape quality is verified against the current Python.org jobs page.",
+    "discovery_notes": "Uses generic direct/browser public-board extraction when enabled.",
+    "search_terms": [
+      "python engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Oracle Careers",
+    "ats": "oracle_careers",
+    "url": "https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=software%20engineer",
+    "entry_url": "https://careers.oracle.com/en/sites/jobsearch/jobs?keyword=software%20engineer",
+    "enabled": true,
+    "portal": "oracle_careers",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "official",
+      "big-tech",
+      "enterprise",
+      "oracle",
+      "public"
+    ],
+    "notes": "Official public Oracle Careers adapter using the Oracle Cloud recruitingCEJobRequisitions JSON API.",
+    "discovery_notes": "No login required. Uses the same public recruiting backend loaded by Oracle Careers search.",
+    "search_terms": [
+      "software engineer"
+    ],
+    "locations": [
+      "United States",
+      "India",
+      "remote"
+    ]
+  },
+  {
+    "company": "Uber",
+    "ats": "uber_careers",
+    "url": "https://www.uber.com/us/en/careers/list/?query=software%20engineer",
+    "entry_url": "https://www.uber.com/us/en/careers/list/?query=software%20engineer",
+    "enabled": true,
+    "portal": "uber_careers",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "official",
+      "mobility",
+      "marketplace",
+      "platform",
+      "engineering"
+    ],
+    "notes": "Official public Uber Careers adapter using the loadSearchJobsResults JSON endpoint behind the careers list page.",
+    "discovery_notes": "No login required. Query comes from the source URL query parameter.",
+    "search_terms": [
+      "software engineer"
+    ],
+    "locations": [
+      "United States",
+      "India",
+      "remote"
+    ]
+  },
+  {
+    "company": "DoorDash",
+    "ats": "greenhouse",
+    "token": "doordashusa",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "mobility",
+      "marketplace",
+      "logistics",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for DoorDash USA."
+  },
+  {
+    "company": "Lyft",
+    "ats": "greenhouse",
+    "token": "lyft",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "mobility",
+      "rideshare",
+      "marketplace",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Lyft."
+  },
+  {
+    "company": "Instacart",
+    "ats": "greenhouse",
+    "token": "instacart",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "marketplace",
+      "logistics",
+      "consumer",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Instacart."
+  },
+  {
+    "company": "Waymo",
+    "ats": "greenhouse",
+    "token": "waymo",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "autonomous-vehicles",
+      "robotics",
+      "platform",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Waymo."
+  },
+  {
+    "company": "Zoox",
+    "ats": "lever",
+    "token": "zoox",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "autonomous-vehicles",
+      "robotics",
+      "lever"
+    ],
+    "notes": "Validated public Lever board for Zoox."
+  },
+  {
+    "company": "Faire",
+    "ats": "greenhouse",
+    "token": "faire",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "marketplace",
+      "commerce",
+      "platform",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Faire."
+  },
+  {
+    "company": "Flexport",
+    "ats": "greenhouse",
+    "token": "flexport",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "logistics",
+      "platform",
+      "marketplace",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Flexport."
+  },
+  {
+    "company": "SentinelOne",
+    "ats": "greenhouse",
+    "token": "sentinellabs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "endpoint-security",
+      "cloud-security",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for SentinelOne."
+  },
+  {
+    "company": "Okta",
+    "ats": "greenhouse",
+    "token": "okta",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "identity",
+      "platform",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Okta and Auth0 roles."
+  },
+  {
+    "company": "1Password",
+    "ats": "ashby",
+    "token": "1password",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "identity",
+      "privacy",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for 1Password."
+  },
+  {
+    "company": "Tenable",
+    "ats": "greenhouse",
+    "token": "tenableinc",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "vulnerability-management",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Tenable."
+  },
+  {
+    "company": "Tanium",
+    "ats": "greenhouse",
+    "token": "tanium",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "endpoint-management",
+      "enterprise",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Tanium."
+  },
+  {
+    "company": "Axonius",
+    "ats": "greenhouse",
+    "token": "axonius",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "asset-management",
+      "cloud-security",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Axonius."
+  },
+  {
+    "company": "Huntress",
+    "ats": "greenhouse",
+    "token": "huntress",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "managed-detection",
+      "smb-security",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Huntress."
+  },
+  {
+    "company": "Orca Security",
+    "ats": "greenhouse",
+    "token": "orcasecurity",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "cloud-security",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Orca Security."
+  },
+  {
+    "company": "Sysdig",
+    "ats": "lever",
+    "token": "sysdig",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "cloud-security",
+      "kubernetes",
+      "lever"
+    ],
+    "notes": "Validated public Lever board for Sysdig."
+  },
+  {
+    "company": "Sophos",
+    "ats": "lever",
+    "token": "sophos",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "endpoint-security",
+      "enterprise",
+      "lever"
+    ],
+    "notes": "Validated public Lever board for Sophos."
+  },
+  {
+    "company": "Censys",
+    "ats": "greenhouse",
+    "token": "censys",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "threat-intelligence",
+      "attack-surface",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Censys."
+  },
+  {
+    "company": "Delinea",
+    "ats": "ashby",
+    "token": "delinea",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "identity",
+      "privileged-access",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for Delinea."
+  },
+  {
+    "company": "Material Security",
+    "ats": "ashby",
+    "token": "materialsecurity",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "email-security",
+      "identity",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board for Material Security."
+  },
+  {
+    "company": "Panther Labs",
+    "ats": "greenhouse",
+    "token": "pantherlabs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "siem",
+      "detection-engineering",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board for Panther Labs."
+  },
+  {
+    "company": "Confluent",
+    "ats": "ashby",
+    "token": "confluent",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "cloud",
+      "streaming",
+      "big-tech",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "ServiceNow",
+    "ats": "smartrecruiters",
+    "token": "ServiceNow",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "cloud",
+      "big-tech",
+      "ai",
+      "smartrecruiters"
+    ],
+    "notes": "Validated public SmartRecruiters postings API from source watchlist probe."
+  },
+  {
+    "company": "Snowflake",
+    "ats": "ashby",
+    "token": "snowflake",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "cloud",
+      "data",
+      "big-tech",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Western Digital",
+    "ats": "smartrecruiters",
+    "token": "westerndigital",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "storage",
+      "hardware",
+      "smartrecruiters"
+    ],
+    "notes": "Validated public SmartRecruiters postings API from source watchlist probe."
+  },
+  {
+    "company": "Grab",
+    "ats": "smartrecruiters",
+    "token": "grab",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "marketplace",
+      "mobility",
+      "systems",
+      "smartrecruiters"
+    ],
+    "notes": "Validated public SmartRecruiters postings API from source watchlist probe."
+  },
+  {
+    "company": "PhonePe",
+    "ats": "greenhouse",
+    "token": "phonepe",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "marketplace",
+      "fintech",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "CRED",
+    "ats": "lever",
+    "token": "cred",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "marketplace",
+      "fintech",
+      "lever"
+    ],
+    "notes": "Validated public Lever board from source watchlist probe."
+  },
+  {
+    "company": "Groww",
+    "ats": "greenhouse",
+    "token": "groww",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "marketplace",
+      "fintech",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "Meesho",
+    "ats": "lever",
+    "token": "meesho",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "marketplace",
+      "commerce",
+      "lever"
+    ],
+    "notes": "Validated public Lever board from source watchlist probe."
+  },
+  {
+    "company": "Zeta",
+    "ats": "lever",
+    "token": "zeta",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "systems",
+      "marketplace",
+      "fintech",
+      "lever"
+    ],
+    "notes": "Validated public Lever board from source watchlist probe."
+  },
+  {
+    "company": "Slice",
+    "ats": "greenhouse",
+    "token": "slice",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "marketplace",
+      "fintech",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "InMobi",
+    "ats": "greenhouse",
+    "token": "inmobi",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "systems",
+      "ads",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "Glance",
+    "ats": "greenhouse",
+    "token": "glance",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "systems",
+      "consumer",
+      "ai",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "HackerRank",
+    "ats": "greenhouse",
+    "token": "hackerrank",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "remote",
+      "systems",
+      "developer-tools",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe. SmartRecruiters probe returned test/demo rows and was intentionally not promoted."
+  },
+  {
+    "company": "Freshworks",
+    "ats": "smartrecruiters",
+    "token": "freshworks",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "systems",
+      "saas",
+      "smartrecruiters"
+    ],
+    "notes": "Validated public SmartRecruiters postings API from source watchlist probe."
+  },
+  {
+    "company": "Netradyne",
+    "ats": "greenhouse",
+    "token": "netradyne",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "india",
+      "systems",
+      "ai",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe. SmartRecruiters duplicate was not promoted."
+  },
+  {
+    "company": "Buildkite",
+    "ats": "greenhouse",
+    "token": "buildkite",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "developer-tools",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "CircleCI",
+    "ats": "greenhouse",
+    "token": "circleci",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "developer-tools",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "New Relic",
+    "ats": "greenhouse",
+    "token": "newrelic",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "observability",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe. SmartRecruiters probe returned placeholder rows and was intentionally not promoted."
+  },
+  {
+    "company": "Honeycomb",
+    "ats": "greenhouse",
+    "token": "honeycomb",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "observability",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "Weaviate",
+    "ats": "ashby",
+    "token": "weaviate",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "ai",
+      "database",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Mux",
+    "ats": "ashby",
+    "token": "mux",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "video",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Zapier",
+    "ats": "ashby",
+    "token": "zapier",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "automation",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Buffer",
+    "ats": "ashby",
+    "token": "buffer",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Tines",
+    "ats": "greenhouse",
+    "token": "tines",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "security",
+      "remote",
+      "automation",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "InfluxData",
+    "ats": "ashby",
+    "token": "influxdata",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "database",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Starburst",
+    "ats": "greenhouse",
+    "token": "starburst",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "data",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "Astronomer",
+    "ats": "ashby",
+    "token": "astronomer",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "remote",
+      "data",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Tenstorrent",
+    "ats": "greenhouse",
+    "token": "tenstorrent",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "ai",
+      "chips",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "Cerebras",
+    "ats": "greenhouse",
+    "token": "cerebrassystems",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "ai",
+      "chips",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "SambaNova",
+    "ats": "greenhouse",
+    "token": "sambanovasystems",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "ai",
+      "chips",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "Astera Labs",
+    "ats": "greenhouse",
+    "token": "asteralabs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "ai",
+      "chips",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from source watchlist probe."
+  },
+  {
+    "company": "d-Matrix",
+    "ats": "ashby",
+    "token": "d-matrix",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "systems",
+      "ai",
+      "chips",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from source watchlist probe."
+  },
+  {
+    "company": "Hacker News Who Is Hiring",
+    "ats": "hackernews_hiring",
+    "token": "who is hiring",
+    "url": "https://news.ycombinator.com/",
+    "entry_url": "https://news.ycombinator.com/",
+    "enabled": true,
+    "portal": "hackernews",
+    "entry_kind": "discussion_thread",
+    "auth_mode": "public",
+    "tags": [
+      "hn",
+      "hackernews",
+      "startup",
+      "aggregator"
+    ],
+    "notes": "Uses the repo-local HN topic extractor helpers to pull top-level comments from the most recent Who Is Hiring thread.",
+    "discovery_notes": "Algolia story search plus HN item fetch; latest recent thread only."
+  }
+]

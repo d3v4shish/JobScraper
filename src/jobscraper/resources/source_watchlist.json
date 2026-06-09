@@ -1,0 +1,504 @@
+[
+  {
+    "company": "CyberArk",
+    "tags": ["security"],
+    "slugs": ["cyberark"]
+  },
+  {
+    "company": "Rapid7",
+    "tags": ["security"],
+    "slugs": ["rapid7"]
+  },
+  {
+    "company": "Proofpoint",
+    "tags": ["security"],
+    "slugs": ["proofpoint"]
+  },
+  {
+    "company": "Arctic Wolf",
+    "tags": ["security"],
+    "slugs": ["arcticwolf", "arcticwolfnetworks"]
+  },
+  {
+    "company": "Aqua Security",
+    "tags": ["security"],
+    "slugs": ["aquasecurity", "aqua-security"]
+  },
+  {
+    "company": "Check Point",
+    "tags": ["security"],
+    "slugs": ["checkpoint", "check-point"]
+  },
+  {
+    "company": "Confluent",
+    "tags": ["systems", "big-tech"],
+    "slugs": ["confluent"]
+  },
+  {
+    "company": "HashiCorp",
+    "tags": ["systems", "cloud"],
+    "slugs": ["hashicorp"]
+  },
+  {
+    "company": "DigitalOcean",
+    "tags": ["systems", "cloud"],
+    "slugs": ["digitalocean"]
+  },
+  {
+    "company": "Snowflake",
+    "tags": ["systems", "big-tech"],
+    "slugs": ["snowflake"]
+  },
+  {
+    "company": "ServiceNow",
+    "tags": ["systems", "big-tech", "ai"],
+    "surfaces": {
+      "smartrecruiters": ["ServiceNow", "servicenow"]
+    }
+  },
+  {
+    "company": "Salesforce",
+    "tags": ["systems", "big-tech"],
+    "slugs": ["salesforce"]
+  },
+  {
+    "company": "Atlassian",
+    "tags": ["systems", "big-tech"],
+    "slugs": ["atlassian"]
+  },
+  {
+    "company": "AMD",
+    "tags": ["systems"],
+    "slugs": ["amd"]
+  },
+  {
+    "company": "Intel",
+    "tags": ["systems"],
+    "slugs": ["intel"]
+  },
+  {
+    "company": "Qualcomm",
+    "tags": ["systems"],
+    "slugs": ["qualcomm"]
+  },
+  {
+    "company": "Arm",
+    "tags": ["systems"],
+    "slugs": ["arm"]
+  },
+  {
+    "company": "Marvell",
+    "tags": ["systems"],
+    "slugs": ["marvell"]
+  },
+  {
+    "company": "Micron",
+    "tags": ["systems"],
+    "slugs": ["micron"]
+  },
+  {
+    "company": "Western Digital",
+    "tags": ["systems"],
+    "slugs": ["westerndigital", "western-digital"]
+  },
+  {
+    "company": "Bolt",
+    "tags": ["marketplace", "remote"],
+    "slugs": ["bolt"]
+  },
+  {
+    "company": "Grab",
+    "tags": ["marketplace", "systems"],
+    "slugs": ["grab"]
+  },
+  {
+    "company": "Gojek",
+    "tags": ["marketplace", "systems"],
+    "slugs": ["gojek"]
+  },
+  {
+    "company": "Rivian",
+    "tags": ["marketplace", "systems"],
+    "slugs": ["rivian"]
+  },
+  {
+    "company": "Cruise",
+    "tags": ["marketplace", "systems"],
+    "slugs": ["cruise"]
+  },
+  {
+    "company": "Razorpay",
+    "tags": ["india", "marketplace"],
+    "slugs": ["razorpay"]
+  },
+  {
+    "company": "PhonePe",
+    "tags": ["india", "marketplace"],
+    "slugs": ["phonepe"]
+  },
+  {
+    "company": "CRED",
+    "tags": ["india", "marketplace"],
+    "slugs": ["cred"]
+  },
+  {
+    "company": "Groww",
+    "tags": ["india", "marketplace"],
+    "slugs": ["groww"]
+  },
+  {
+    "company": "Meesho",
+    "tags": ["india", "marketplace"],
+    "slugs": ["meesho"]
+  },
+  {
+    "company": "Swiggy",
+    "tags": ["india", "marketplace"],
+    "slugs": ["swiggy"]
+  },
+  {
+    "company": "Zepto",
+    "tags": ["india", "marketplace"],
+    "slugs": ["zepto"]
+  },
+  {
+    "company": "Zerodha",
+    "tags": ["india", "systems"],
+    "slugs": ["zerodha"]
+  },
+  {
+    "company": "Flipkart",
+    "tags": ["india", "marketplace", "systems"],
+    "slugs": ["flipkart"]
+  },
+  {
+    "company": "Udaan",
+    "tags": ["india", "marketplace"],
+    "slugs": ["udaan"]
+  },
+  {
+    "company": "Pine Labs",
+    "tags": ["india", "marketplace"],
+    "slugs": ["pinelabs", "pine-labs"]
+  },
+  {
+    "company": "Cashfree",
+    "tags": ["india", "marketplace"],
+    "slugs": ["cashfree", "cashfreepayments"]
+  },
+  {
+    "company": "Juspay",
+    "tags": ["india", "marketplace", "systems"],
+    "slugs": ["juspay"]
+  },
+  {
+    "company": "Zeta",
+    "tags": ["india", "marketplace", "systems"],
+    "slugs": ["zeta", "zeta-suite"]
+  },
+  {
+    "company": "Niyo",
+    "tags": ["india", "marketplace"],
+    "slugs": ["niyo"]
+  },
+  {
+    "company": "Slice",
+    "tags": ["india", "marketplace"],
+    "slugs": ["slice", "sliceit"]
+  },
+  {
+    "company": "Khatabook",
+    "tags": ["india", "marketplace"],
+    "slugs": ["khatabook"]
+  },
+  {
+    "company": "KreditBee",
+    "tags": ["india", "marketplace"],
+    "slugs": ["kreditbee"]
+  },
+  {
+    "company": "InMobi",
+    "tags": ["india", "systems"],
+    "slugs": ["inmobi"]
+  },
+  {
+    "company": "Glance",
+    "tags": ["india", "systems"],
+    "slugs": ["glance"]
+  },
+  {
+    "company": "Amagi",
+    "tags": ["india", "systems"],
+    "slugs": ["amagi"]
+  },
+  {
+    "company": "MoEngage",
+    "tags": ["india", "systems"],
+    "slugs": ["moengage"]
+  },
+  {
+    "company": "HackerRank",
+    "tags": ["india", "remote", "systems"],
+    "slugs": ["hackerrank"]
+  },
+  {
+    "company": "Hasura",
+    "tags": ["india", "remote", "systems"],
+    "slugs": ["hasura"]
+  },
+  {
+    "company": "Whatfix",
+    "tags": ["india", "systems"],
+    "slugs": ["whatfix"]
+  },
+  {
+    "company": "Freshworks",
+    "tags": ["india", "systems"],
+    "slugs": ["freshworks"]
+  },
+  {
+    "company": "BrowserStack",
+    "tags": ["india", "remote", "systems"],
+    "slugs": ["browserstack"]
+  },
+  {
+    "company": "Chargebee",
+    "tags": ["india", "remote", "systems"],
+    "slugs": ["chargebee"]
+  },
+  {
+    "company": "Urban Company",
+    "tags": ["india", "marketplace"],
+    "slugs": ["urbancompany", "urban-company"]
+  },
+  {
+    "company": "ShareChat",
+    "tags": ["india", "marketplace", "systems"],
+    "slugs": ["sharechat"]
+  },
+  {
+    "company": "Ola Electric",
+    "tags": ["india", "systems"],
+    "slugs": ["olaelectric", "ola-electric"]
+  },
+  {
+    "company": "Ather Energy",
+    "tags": ["india", "systems"],
+    "slugs": ["atherenergy", "ather-energy"]
+  },
+  {
+    "company": "Netradyne",
+    "tags": ["india", "systems", "ai"],
+    "slugs": ["netradyne"]
+  },
+  {
+    "company": "Pulumi",
+    "tags": ["systems", "remote"],
+    "slugs": ["pulumi"]
+  },
+  {
+    "company": "Spacelift",
+    "tags": ["systems", "remote"],
+    "slugs": ["spacelift"]
+  },
+  {
+    "company": "Harness",
+    "tags": ["systems", "remote"],
+    "slugs": ["harness", "harnessio"]
+  },
+  {
+    "company": "Buildkite",
+    "tags": ["systems", "remote"],
+    "slugs": ["buildkite"]
+  },
+  {
+    "company": "CircleCI",
+    "tags": ["systems", "remote"],
+    "slugs": ["circleci"]
+  },
+  {
+    "company": "New Relic",
+    "tags": ["systems", "remote"],
+    "slugs": ["newrelic", "new-relic"]
+  },
+  {
+    "company": "Honeycomb",
+    "tags": ["systems", "remote"],
+    "slugs": ["honeycomb", "honeycombio"]
+  },
+  {
+    "company": "Chronosphere",
+    "tags": ["systems", "remote"],
+    "slugs": ["chronosphere"]
+  },
+  {
+    "company": "Coralogix",
+    "tags": ["systems", "remote"],
+    "slugs": ["coralogix"]
+  },
+  {
+    "company": "Aiven",
+    "tags": ["systems", "remote"],
+    "slugs": ["aiven"]
+  },
+  {
+    "company": "Upstash",
+    "tags": ["systems", "remote"],
+    "slugs": ["upstash"]
+  },
+  {
+    "company": "Momento",
+    "tags": ["systems", "remote"],
+    "slugs": ["momento", "gomomento"]
+  },
+  {
+    "company": "Qdrant",
+    "tags": ["systems", "remote", "ai"],
+    "slugs": ["qdrant"]
+  },
+  {
+    "company": "Weaviate",
+    "tags": ["systems", "remote", "ai"],
+    "slugs": ["weaviate"]
+  },
+  {
+    "company": "Fly.io",
+    "tags": ["systems", "remote"],
+    "slugs": ["flyio", "fly"]
+  },
+  {
+    "company": "Mux",
+    "tags": ["systems", "remote"],
+    "slugs": ["mux"]
+  },
+  {
+    "company": "Automattic",
+    "tags": ["systems", "remote"],
+    "slugs": ["automattic"]
+  },
+  {
+    "company": "Zapier",
+    "tags": ["systems", "remote"],
+    "slugs": ["zapier"]
+  },
+  {
+    "company": "Buffer",
+    "tags": ["systems", "remote"],
+    "slugs": ["buffer"]
+  },
+  {
+    "company": "Doist",
+    "tags": ["systems", "remote"],
+    "slugs": ["doist"]
+  },
+  {
+    "company": "Tines",
+    "tags": ["security", "remote"],
+    "slugs": ["tines"]
+  },
+  {
+    "company": "Fleet",
+    "tags": ["security", "systems", "remote"],
+    "slugs": ["fleet", "fleetdm"]
+  },
+  {
+    "company": "Gitpod",
+    "tags": ["systems", "remote"],
+    "slugs": ["gitpod"]
+  },
+  {
+    "company": "Oxide Computer",
+    "tags": ["systems", "remote"],
+    "slugs": ["oxidecomputer", "oxide-computer"]
+  },
+  {
+    "company": "Fermyon",
+    "tags": ["systems", "remote"],
+    "slugs": ["fermyon"]
+  },
+  {
+    "company": "InfluxData",
+    "tags": ["systems", "remote"],
+    "slugs": ["influxdata"]
+  },
+  {
+    "company": "Timescale",
+    "tags": ["systems", "remote"],
+    "slugs": ["timescale", "timescaledb"]
+  },
+  {
+    "company": "ScyllaDB",
+    "tags": ["systems", "remote"],
+    "slugs": ["scylladb", "scylla"]
+  },
+  {
+    "company": "Starburst",
+    "tags": ["systems", "remote"],
+    "slugs": ["starburst", "starburstdata"]
+  },
+  {
+    "company": "Astronomer",
+    "tags": ["systems", "remote"],
+    "slugs": ["astronomer"]
+  },
+  {
+    "company": "Lacework",
+    "tags": ["security"],
+    "slugs": ["lacework"]
+  },
+  {
+    "company": "SiFive",
+    "tags": ["systems"],
+    "slugs": ["sifive"]
+  },
+  {
+    "company": "Rivos",
+    "tags": ["systems"],
+    "slugs": ["rivos"]
+  },
+  {
+    "company": "Tenstorrent",
+    "tags": ["systems", "ai"],
+    "slugs": ["tenstorrent"]
+  },
+  {
+    "company": "Cerebras",
+    "tags": ["systems", "ai"],
+    "slugs": ["cerebras", "cerebrassystems"]
+  },
+  {
+    "company": "Groq",
+    "tags": ["systems", "ai"],
+    "slugs": ["groq"]
+  },
+  {
+    "company": "Lambda Labs",
+    "tags": ["systems", "ai"],
+    "slugs": ["lambdalabs", "lambda-labs"]
+  },
+  {
+    "company": "SambaNova",
+    "tags": ["systems", "ai"],
+    "slugs": ["sambanova", "sambanovasystems"]
+  },
+  {
+    "company": "Enfabrica",
+    "tags": ["systems", "ai"],
+    "slugs": ["enfabrica"]
+  },
+  {
+    "company": "Astera Labs",
+    "tags": ["systems", "ai"],
+    "slugs": ["asteralabs", "astera-labs"]
+  },
+  {
+    "company": "d-Matrix",
+    "tags": ["systems", "ai"],
+    "slugs": ["dmatrix", "d-matrix"]
+  },
+  {
+    "company": "Etched",
+    "tags": ["systems", "ai"],
+    "slugs": ["etched"]
+  }
+]
