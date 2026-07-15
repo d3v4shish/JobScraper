@@ -11,12 +11,13 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import sqlite3
 import time
 import hashlib
 from pathlib import Path
 from threading import Lock
-from typing import Any, Dict, Iterable, List, Optional, Sequence
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, TextIO
 
 from .. import paths
 from . import fs
@@ -39,9 +40,14 @@ SUPPORTED_ATS = {
     "hackernews_hiring",
     "remoteok_api",
     "remotive_api",
+    "jobicy_api",
+    "themuse_api",
+    "workingnomads_api",
     "weworkremotely_rss",
     "powertofly_search",
     "authenticjobs_wp",
+    "paloalto_search",
+    "twosigma_search",
     "dice_search",
     "remote_co_search",
     "justremote_search",
@@ -90,6 +96,10 @@ SUPPORTED_ATS = {
     "hirist_search",
     "foundit_search",
     "timesjobs_search",
+    "hiringcafe_search",
+    "echojobs_search",
+    "aijobsnet_search",
+    "datayoshi_search",
     "ai_jobs_search",
     "ml_jobs_search",
     "data_jobs_search",
@@ -117,9 +127,14 @@ URL_REQUIRED_ATS = {
     "gresearch",
     "remoteok_api",
     "remotive_api",
+    "jobicy_api",
+    "themuse_api",
+    "workingnomads_api",
     "weworkremotely_rss",
     "powertofly_search",
     "authenticjobs_wp",
+    "paloalto_search",
+    "twosigma_search",
     "dice_search",
     "remote_co_search",
     "justremote_search",
@@ -168,6 +183,10 @@ URL_REQUIRED_ATS = {
     "hirist_search",
     "foundit_search",
     "timesjobs_search",
+    "hiringcafe_search",
+    "echojobs_search",
+    "aijobsnet_search",
+    "datayoshi_search",
     "ai_jobs_search",
     "ml_jobs_search",
     "data_jobs_search",
@@ -184,6 +203,7 @@ _SOURCE_SUCCESS_STATUSES = {"direct_api", "browser_public", "success", "public_o
 _SOURCE_NEUTRAL_STATUSES = {"running", "disabled"}
 _STACK_SUMMARY_CATEGORIES = ("language", "framework", "domain", "tool", "group")
 _STACK_SUMMARY_CATEGORY_SQL = ", ".join(f"'{category}'" for category in _STACK_SUMMARY_CATEGORIES)
+_FTS_SEARCH_TOKEN_RE = re.compile(r"[A-Za-z0-9_]+")
 LOGGER = logging.getLogger(__name__)
 
 
@@ -200,6 +220,10 @@ class JobScraperConnection(sqlite3.Connection):
 def now_ts() -> int:
     """Return the current Unix timestamp in seconds for persisted scrape metadata."""
     return int(time.time())
+
+
+class ExportCancelled(Exception):
+    """Raised when a cooperative JSON export cancellation is requested."""
 
 
 def json_dumps(value: Any) -> str:
@@ -566,6 +590,7 @@ def migrate_connection(conn: sqlite3.Connection) -> None:
     ensure_column(conn, "sources", "last_failure_at", "INTEGER")
     ensure_column(conn, "sources", "last_duration_ms", "INTEGER")
     _ensure_job_stack_summary(conn)
+    _ensure_job_search_fts(conn)
     try:
         conn.execute("PRAGMA optimize")
     except sqlite3.Error as exc:
@@ -656,6 +681,127 @@ def _ensure_job_stack_summary(conn: sqlite3.Connection) -> None:
         return
     if int(row["job_count"] or 0) != int(row["summary_count"] or 0):
         _rebuild_job_stack_summary(conn)
+
+
+def _create_job_search_fts(conn: sqlite3.Connection) -> bool:
+    """Create the optional FTS5 search table when the SQLite build supports it."""
+    try:
+        conn.execute(
+            """
+            CREATE VIRTUAL TABLE IF NOT EXISTS jobs_fts USING fts5(
+                company,
+                title,
+                location,
+                department,
+                text
+            )
+            """
+        )
+        conn.executescript(
+            """
+            CREATE TRIGGER IF NOT EXISTS jobs_fts_insert
+            AFTER INSERT ON jobs
+            BEGIN
+                INSERT INTO jobs_fts(rowid, company, title, location, department, text)
+                VALUES (new.id, new.company, new.title, new.location, new.department, new.text);
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS jobs_fts_update
+            AFTER UPDATE OF company, title, location, department, text ON jobs
+            BEGIN
+                DELETE FROM jobs_fts WHERE rowid = old.id;
+                INSERT INTO jobs_fts(rowid, company, title, location, department, text)
+                VALUES (new.id, new.company, new.title, new.location, new.department, new.text);
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS jobs_fts_delete
+            AFTER DELETE ON jobs
+            BEGIN
+                DELETE FROM jobs_fts WHERE rowid = old.id;
+            END;
+            """
+        )
+    except sqlite3.Error as exc:
+        LOGGER.warning("job_search_fts_unavailable error=%s", exc)
+        return False
+    return True
+
+
+def _job_search_fts_ready(conn: sqlite3.Connection) -> bool:
+    row = conn.execute(
+        """
+        SELECT 1
+        FROM sqlite_master
+        WHERE name = 'jobs_fts'
+          AND type = 'table'
+        """
+    ).fetchone()
+    return bool(row)
+
+
+def _rebuild_job_search_fts(conn: sqlite3.Connection) -> None:
+    """Rebuild the standalone FTS index from authoritative job rows."""
+    if not _job_search_fts_ready(conn):
+        return
+    conn.execute("DELETE FROM jobs_fts")
+    conn.execute(
+        """
+        INSERT INTO jobs_fts(rowid, company, title, location, department, text)
+        SELECT id, company, title, location, department, text
+        FROM jobs
+        """
+    )
+
+
+def _ensure_job_search_fts(conn: sqlite3.Connection) -> None:
+    """Ensure FTS has one indexed row per job when FTS5 is available."""
+    if not _create_job_search_fts(conn):
+        return
+    row = conn.execute(
+        """
+        SELECT
+            (SELECT COUNT(*) FROM jobs) AS job_count,
+            (SELECT COUNT(*) FROM jobs_fts) AS fts_count
+        """
+    ).fetchone()
+    if not row:
+        return
+    if int(row["job_count"] or 0) != int(row["fts_count"] or 0):
+        _rebuild_job_search_fts(conn)
+
+
+def _replace_job_search_fts(
+    conn: sqlite3.Connection,
+    job_id: int,
+    *,
+    company: str,
+    title: str,
+    location: str,
+    department: str,
+    text: str,
+) -> None:
+    """Refresh one FTS row after a job upsert."""
+    if not _job_search_fts_ready(conn):
+        return
+    conn.execute("DELETE FROM jobs_fts WHERE rowid = ?", (int(job_id),))
+    conn.execute(
+        """
+        INSERT INTO jobs_fts(rowid, company, title, location, department, text)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (int(job_id), company, title, location, department, text),
+    )
+
+
+def _fts_query(search: str) -> str:
+    """Build a conservative FTS query for normal word searches."""
+    tokens = [token.casefold() for token in _FTS_SEARCH_TOKEN_RE.findall(search) if len(token) >= 2]
+    return " ".join(f"{token}*" for token in tokens)
+
+
+def _chunks(values: Sequence[Any], size: int = 900) -> Iterable[Sequence[Any]]:
+    for start in range(0, len(values), size):
+        yield values[start : start + size]
 
 
 def _clean_source(raw: Dict[str, Any]) -> Dict[str, Any]:
@@ -1195,6 +1341,15 @@ def upsert_job(
     if not row:
         raise RuntimeError(f"failed to upsert job {job_key}")
     job_id = int(row["id"])
+    _replace_job_search_fts(
+        conn,
+        job_id,
+        company=str(job.get("company") or source["company"]),
+        title=str(job.get("title") or ""),
+        location=str(job.get("location") or ""),
+        department=str(job.get("department") or ""),
+        text=str(job.get("text") or ""),
+    )
 
     conn.execute(
         """
@@ -1247,6 +1402,197 @@ def upsert_job(
     return job_id
 
 
+def _fetch_job_ids_for_keys(conn: sqlite3.Connection, job_keys: Sequence[str]) -> Dict[str, int]:
+    out: Dict[str, int] = {}
+    unique_keys = list(dict.fromkeys(str(key) for key in job_keys if str(key)))
+    for key_chunk in _chunks(unique_keys):
+        placeholders = ", ".join("?" for _ in key_chunk)
+        rows = conn.execute(
+            f"SELECT id, job_key FROM jobs WHERE job_key IN ({placeholders})",
+            list(key_chunk),
+        ).fetchall()
+        out.update({str(row["job_key"]): int(row["id"]) for row in rows})
+    return out
+
+
+def _delete_stack_rows_for_jobs(conn: sqlite3.Connection, job_ids: Sequence[int]) -> None:
+    for id_chunk in _chunks([int(job_id) for job_id in job_ids if int(job_id)]):
+        placeholders = ", ".join("?" for _ in id_chunk)
+        conn.execute(f"DELETE FROM job_stack WHERE job_id IN ({placeholders})", list(id_chunk))
+
+
+def _refresh_job_stack_summary_many(conn: sqlite3.Connection, job_ids: Sequence[int]) -> None:
+    normalized_ids = [int(job_id) for job_id in job_ids if int(job_id)]
+    for id_chunk in _chunks(normalized_ids):
+        placeholders = ", ".join("?" for _ in id_chunk)
+        conn.execute(f"DELETE FROM job_stack_summary WHERE job_id IN ({placeholders})", list(id_chunk))
+        conn.execute(
+            f"""
+            INSERT INTO job_stack_summary (job_id, detected_stack)
+            SELECT
+                j.id,
+                COALESCE(stack.detected_stack, '') AS detected_stack
+            FROM jobs j
+            LEFT JOIN (
+                SELECT job_id, GROUP_CONCAT(name, ', ') AS detected_stack
+                FROM (
+                    SELECT job_id, name
+                    FROM job_stack
+                    WHERE job_id IN ({placeholders})
+                      AND category IN ({_STACK_SUMMARY_CATEGORY_SQL})
+                    GROUP BY job_id, name
+                    ORDER BY job_id, name COLLATE NOCASE
+                )
+                GROUP BY job_id
+            ) stack ON stack.job_id = j.id
+            WHERE j.id IN ({placeholders})
+            """,
+            [*list(id_chunk), *list(id_chunk)],
+        )
+
+
+def upsert_jobs_batch(
+    conn: sqlite3.Connection,
+    source: Dict[str, Any],
+    rows: Sequence[tuple[Dict[str, Any], Dict[str, Any], Dict[str, List[str]]]],
+    *,
+    seen_at: Optional[int] = None,
+) -> Dict[str, int]:
+    """Upsert a source batch and refresh matches/stacks with set-oriented writes."""
+    if not rows:
+        return {}
+    seen = seen_at if seen_at is not None else now_ts()
+    job_rows: List[tuple[Any, ...]] = []
+    job_keys: List[str] = []
+    for job, _match, _stack in rows:
+        job_key = str(job["job_key"])
+        job_keys.append(job_key)
+        job_rows.append(
+            (
+                job_key,
+                int(source["id"]),
+                job.get("company") or source["company"],
+                job.get("ats") or source["ats"],
+                str(job.get("source_job_id") or ""),
+                str(job.get("title") or ""),
+                str(job.get("location") or ""),
+                str(job.get("department") or ""),
+                str(job.get("employment_type") or ""),
+                1 if job.get("remote") else 0,
+                str(job.get("job_url") or ""),
+                str(job.get("apply_url") or ""),
+                job.get("published_at"),
+                job.get("updated_at"),
+                seen,
+                seen,
+                str(job.get("text") or ""),
+                raw_json_dumps(job.get("raw", {})),
+            )
+        )
+    conn.executemany(
+        """
+        INSERT INTO jobs (
+            job_key, source_id, company, ats, source_job_id, title, location,
+            department, employment_type, remote, job_url, apply_url,
+            published_at, updated_at, first_seen_at, last_seen_at, status,
+            text, raw_json
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)
+        ON CONFLICT(job_key) DO UPDATE SET
+            source_id = excluded.source_id,
+            company = excluded.company,
+            ats = excluded.ats,
+            source_job_id = excluded.source_job_id,
+            title = excluded.title,
+            location = excluded.location,
+            department = excluded.department,
+            employment_type = excluded.employment_type,
+            remote = excluded.remote,
+            job_url = excluded.job_url,
+            apply_url = excluded.apply_url,
+            published_at = excluded.published_at,
+            updated_at = excluded.updated_at,
+            last_seen_at = excluded.last_seen_at,
+            status = 'open',
+            text = excluded.text,
+            raw_json = excluded.raw_json
+        """,
+        job_rows,
+    )
+    ids_by_key = _fetch_job_ids_for_keys(conn, job_keys)
+    match_rows: List[tuple[Any, ...]] = []
+    stack_rows: List[tuple[Any, ...]] = []
+    summary_rows: List[tuple[Any, ...]] = []
+    for job, match, stack in rows:
+        job_id = ids_by_key[str(job["job_key"])]
+        match_rows.append(
+            (
+                job_id,
+                json_dumps(match.get("matched_required_words", [])),
+                json_dumps(match.get("matched_include_words", [])),
+                json_dumps(match.get("matched_include_group", [])),
+                json_dumps(match.get("matched_builtin_groups", [])),
+                json_dumps(match.get("location_modes", [])),
+                json_dumps(match.get("interest_tags", [])),
+                1 if match.get("passes_filter") else 0,
+            )
+        )
+        summary_names: List[str] = []
+        for category, names in (
+            ("language", stack.get("languages", [])),
+            ("framework", stack.get("frameworks", [])),
+            ("domain", stack.get("domains", [])),
+            ("tool", stack.get("tools", [])),
+            ("group", stack.get("groups", [])),
+            ("location", match.get("location_modes", [])),
+        ):
+            for name in names:
+                stack_rows.append((job_id, category, name))
+                if category in _STACK_SUMMARY_CATEGORIES:
+                    summary_names.append(str(name))
+        detected_stack = ", ".join(sorted(set(summary_names), key=str.lower))
+        summary_rows.append((job_id, detected_stack))
+    conn.executemany(
+        """
+        INSERT INTO job_matches (
+            job_id, matched_required_words_json, matched_include_words_json,
+            matched_include_group_json, matched_builtin_groups_json,
+            location_modes_json, interest_tags_json, passes_filter
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(job_id) DO UPDATE SET
+            matched_required_words_json = excluded.matched_required_words_json,
+            matched_include_words_json = excluded.matched_include_words_json,
+            matched_include_group_json = excluded.matched_include_group_json,
+            matched_builtin_groups_json = excluded.matched_builtin_groups_json,
+            location_modes_json = excluded.location_modes_json,
+            interest_tags_json = excluded.interest_tags_json,
+            passes_filter = excluded.passes_filter
+        """,
+        match_rows,
+    )
+    affected_ids = list(ids_by_key.values())
+    _delete_stack_rows_for_jobs(conn, affected_ids)
+    if stack_rows:
+        conn.executemany(
+            """
+            INSERT OR IGNORE INTO job_stack (job_id, category, name)
+            VALUES (?, ?, ?)
+            """,
+            stack_rows,
+        )
+    conn.executemany(
+        """
+        INSERT INTO job_stack_summary (job_id, detected_stack)
+        VALUES (?, ?)
+        ON CONFLICT(job_id) DO UPDATE SET
+            detected_stack = excluded.detected_stack
+        """,
+        summary_rows,
+    )
+    return ids_by_key
+
+
 def mark_missing_jobs_closed(
     conn: sqlite3.Connection,
     source_id: int,
@@ -1287,6 +1633,7 @@ def _job_where(
     source_tag: str = "",
     hn_mode: str = "",
     founding_only: bool = False,
+    use_fts_search: bool = False,
 ) -> tuple[str, List[Any]]:
     clauses: List[str] = []
     params: List[Any] = []
@@ -1296,19 +1643,24 @@ def _job_where(
     if open_only:
         clauses.append("j.status = 'open'")
     if search.strip():
-        needle = f"%{search.strip().lower()}%"
-        clauses.append(
-            """
-            (
-                lower(j.company) LIKE ?
-                OR lower(j.title) LIKE ?
-                OR lower(j.location) LIKE ?
-                OR lower(j.department) LIKE ?
-                OR lower(j.text) LIKE ?
+        query = _fts_query(search)
+        if use_fts_search and query:
+            clauses.append("j.id IN (SELECT rowid FROM jobs_fts WHERE jobs_fts MATCH ?)")
+            params.append(query)
+        else:
+            needle = f"%{search.strip().lower()}%"
+            clauses.append(
+                """
+                (
+                    lower(j.company) LIKE ?
+                    OR lower(j.title) LIKE ?
+                    OR lower(j.location) LIKE ?
+                    OR lower(j.department) LIKE ?
+                    OR lower(j.text) LIKE ?
+                )
+                """
             )
-            """
-        )
-        params.extend([needle, needle, needle, needle, needle])
+            params.extend([needle, needle, needle, needle, needle])
     if stack.strip():
         clauses.append(
             """
@@ -1397,6 +1749,7 @@ def query_jobs(
             source_tag=source_tag,
             hn_mode=hn_mode,
             founding_only=founding_only,
+            use_fts_search=_job_search_fts_ready(conn),
         )
         order_by = (
             "j.company COLLATE NOCASE, j.title COLLATE NOCASE, j.last_seen_at DESC"
@@ -1410,6 +1763,8 @@ def query_jobs(
                 j.company,
                 j.title,
                 j.location,
+                j.department,
+                j.remote,
                 j.published_at,
                 j.last_seen_at,
                 j.status
@@ -1419,7 +1774,8 @@ def query_jobs(
         )
         match_select = (
             """
-                0 AS passes_filter
+                jm.passes_filter,
+                jm.interest_tags_json
             """
             if summary_only
             else """
@@ -1490,6 +1846,7 @@ def list_company_counts(
             source_tag=source_tag,
             hn_mode=hn_mode,
             founding_only=founding_only,
+            use_fts_search=_job_search_fts_ready(conn),
         )
         rows = conn.execute(
             f"""
@@ -1541,7 +1898,7 @@ def _row_to_job_summary(row: sqlite3.Row) -> Dict[str, Any]:
     item["matched_include_group"] = []
     item["matched_builtin_groups"] = []
     item["location_modes"] = []
-    item["interest_tags"] = []
+    item["interest_tags"] = json_loads(item.pop("interest_tags_json", "[]"), [])
     return item
 
 
@@ -1744,20 +2101,21 @@ def analytics_summary(
     stack: str = "",
     founding_only: bool = False,
 ) -> Dict[str, Any]:
-    where, params = _job_where(
-        matching_only=matching_only,
-        open_only=open_only,
-        search=search,
-        stack=stack,
-        companies=companies,
-        portal=portal,
-        source_id=source_id,
-        source_tag=source_tag,
-        hn_mode=hn_mode,
-        founding_only=founding_only,
-    )
     with connect(db_path) as conn:
         migrate_connection(conn)
+        where, params = _job_where(
+            matching_only=matching_only,
+            open_only=open_only,
+            search=search,
+            stack=stack,
+            companies=companies,
+            portal=portal,
+            source_id=source_id,
+            source_tag=source_tag,
+            hn_mode=hn_mode,
+            founding_only=founding_only,
+            use_fts_search=_job_search_fts_ready(conn),
+        )
         totals = conn.execute(
             f"""
             SELECT
@@ -2095,6 +2453,125 @@ def list_question_prefill_filter_specs(
     return unique_specs
 
 
+def _export_detail_rows(conn: sqlite3.Connection, job_ids: Sequence[int]) -> Dict[int, sqlite3.Row]:
+    """Load export detail rows for one chunk keyed by job id."""
+    normalized_ids = [int(job_id) for job_id in job_ids if int(job_id)]
+    if not normalized_ids:
+        return {}
+    placeholders = ", ".join("?" for _ in normalized_ids)
+    rows = conn.execute(
+        f"""
+        SELECT
+            j.*,
+            s.portal AS source_portal,
+            s.entry_kind AS source_entry_kind,
+            s.auth_mode AS source_auth_mode,
+            s.browser_backend AS source_browser_backend,
+            s.session_status AS source_session_status,
+            jm.passes_filter,
+            jm.matched_required_words_json,
+            jm.matched_include_words_json,
+            jm.matched_include_group_json,
+            jm.matched_builtin_groups_json,
+            jm.location_modes_json,
+            jm.interest_tags_json,
+            COALESCE(jss.detected_stack, '') AS detected_stack
+        FROM jobs j
+        JOIN sources s ON s.id = j.source_id
+        LEFT JOIN job_matches jm ON jm.job_id = j.id
+        LEFT JOIN job_stack_summary jss ON jss.job_id = j.id
+        WHERE j.id IN ({placeholders})
+        """,
+        normalized_ids,
+    ).fetchall()
+    return {int(row["id"]): row for row in rows}
+
+
+def _safe_raw_json_text(value: Any) -> str:
+    """Return raw JSON text suitable for embedding in exported job JSON."""
+    raw = str(value or "{}").strip()
+    if not raw or raw[0] not in "[{":
+        return "{}"
+    return raw
+
+
+def _write_json_field(handle: TextIO, key: str, value: Any, *, first: bool) -> bool:
+    if not first:
+        handle.write(",")
+    handle.write(json.dumps(str(key), ensure_ascii=False, separators=(",", ":")))
+    handle.write(":")
+    handle.write(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+    return False
+
+
+def _write_raw_json_field(handle: TextIO, key: str, raw_json: str, *, first: bool) -> bool:
+    if not first:
+        handle.write(",")
+    handle.write(json.dumps(str(key), ensure_ascii=False, separators=(",", ":")))
+    handle.write(":")
+    handle.write(raw_json)
+    return False
+
+
+def _write_export_job_object(handle: TextIO, row: sqlite3.Row) -> None:
+    item = dict(row)
+    raw_json = _safe_raw_json_text(item.pop("raw_json", "{}"))
+    item["remote"] = bool(item.get("remote"))
+    item["passes_filter"] = bool(item.get("passes_filter"))
+    json_columns = (
+        ("matched_required_words_json", "matched_required_words"),
+        ("matched_include_words_json", "matched_include_words"),
+        ("matched_include_group_json", "matched_include_group"),
+        ("matched_builtin_groups_json", "matched_builtin_groups"),
+        ("location_modes_json", "location_modes"),
+        ("interest_tags_json", "interest_tags"),
+    )
+    for source_key, target_key in json_columns:
+        item[target_key] = json_loads(item.pop(source_key, "[]"), [])
+
+    handle.write("{")
+    first = True
+    for key, value in item.items():
+        first = _write_json_field(handle, key, value, first=first)
+    _write_raw_json_field(handle, "raw", raw_json, first=first)
+    handle.write("}")
+
+
+def _write_export_jobs_json_payload(
+    handle: TextIO,
+    conn: sqlite3.Connection,
+    job_ids: Sequence[int],
+    *,
+    chunk_size: int = 1000,
+    progress: Optional[Callable[[int, int], None]] = None,
+    should_cancel: Optional[Callable[[], bool]] = None,
+) -> int:
+    exported = 0
+    total = len(job_ids)
+    handle.write("[")
+    first_object = True
+    for start in range(0, len(job_ids), chunk_size):
+        if should_cancel is not None and should_cancel():
+            raise ExportCancelled("Export cancelled.")
+        chunk_ids = [int(job_id) for job_id in job_ids[start : start + chunk_size]]
+        rows_by_id = _export_detail_rows(conn, chunk_ids)
+        for job_id in chunk_ids:
+            if should_cancel is not None and should_cancel():
+                raise ExportCancelled("Export cancelled.")
+            row = rows_by_id.get(job_id)
+            if row is None:
+                continue
+            if not first_object:
+                handle.write(",")
+            _write_export_job_object(handle, row)
+            first_object = False
+            exported += 1
+        if progress is not None:
+            progress(exported, total)
+    handle.write("]")
+    return exported
+
+
 def export_jobs_json(
     db_path: Path | str = DEFAULT_DB_PATH,
     out_path: Path | str = Path("company_jobs.json"),
@@ -2109,6 +2586,8 @@ def export_jobs_json(
     founding_only: bool = False,
     search: str = "",
     stack: str = "",
+    progress: Optional[Callable[[int, int], None]] = None,
+    should_cancel: Optional[Callable[[], bool]] = None,
 ) -> int:
     jobs = query_jobs(
         db_path,
@@ -2123,17 +2602,26 @@ def export_jobs_json(
         hn_mode=hn_mode,
         founding_only=founding_only,
         limit=100000,
+        summary_only=True,
     )
-    payload: List[Dict[str, Any]] = []
-    for job in jobs:
-        detail = get_job_detail(db_path, int(job["id"])) or job
-        raw = detail.copy()
-        raw.pop("raw_json", None)
-        payload.append(raw)
-
+    job_ids = [int(job["id"]) for job in jobs if int(job.get("id") or 0)]
     out = Path(out_path)
-    fs.atomic_write_json(out, payload)
-    return len(payload)
+    exported = 0
+    with connect(db_path) as conn:
+        migrate_connection(conn)
+
+        def write_payload(handle: TextIO) -> None:
+            nonlocal exported
+            exported = _write_export_jobs_json_payload(
+                handle,
+                conn,
+                job_ids,
+                progress=progress,
+                should_cancel=should_cancel,
+            )
+
+        fs.atomic_write_generated_text(out, write_payload)
+    return exported
 
 
 def execute_many(conn: sqlite3.Connection, sql: str, rows: Sequence[Sequence[Any]]) -> None:

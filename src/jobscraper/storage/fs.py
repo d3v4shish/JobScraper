@@ -7,7 +7,7 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, TextIO
 
 
 PRIVATE_DIR_MODE = 0o700
@@ -87,7 +87,7 @@ def atomic_write_json(
     path: Path | str,
     payload: Any,
     *,
-    indent: int = 2,
+    indent: int | None = 2,
     trailing_newline: bool = False,
     mode: int = PRIVATE_FILE_MODE,
 ) -> Path:
@@ -96,6 +96,34 @@ def atomic_write_json(
     if trailing_newline:
         text += "\n"
     return atomic_write_text(path, text, mode=mode)
+
+
+def atomic_write_generated_text(
+    path: Path | str,
+    writer: Callable[[TextIO], None],
+    *,
+    mode: int = PRIVATE_FILE_MODE,
+) -> Path:
+    """Atomically write text generated incrementally by the caller."""
+    target = Path(path)
+    parent = _prepare_write_parent(target)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{target.name}.", suffix=".tmp", dir=str(parent))
+    temp_path = Path(temp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            writer(handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+        chmod_best_effort(temp_path, mode)
+        os.replace(temp_path, target)
+        chmod_best_effort(target, mode)
+        _fsync_parent(target)
+    finally:
+        try:
+            temp_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+    return target
 
 
 def copy_file(src: Path | str, dst: Path | str, *, mode: int = PRIVATE_FILE_MODE) -> Path:

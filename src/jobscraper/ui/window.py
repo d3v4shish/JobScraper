@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import logging
+import json
 import os
 import sys
 from collections import OrderedDict, defaultdict, deque
@@ -13,7 +14,7 @@ from typing import Any, Callable, Deque, Dict, List, Optional, Sequence
 
 from PyQt6.QtCore import QThreadPool, QTimer, Qt, QUrl
 from PyQt6.QtGui import QAction, QDesktopServices, QIcon
-from PyQt6.QtWidgets import QApplication, QAbstractItemView, QDialog, QFileDialog, QMainWindow, QMenu, QMessageBox, QSplitter, QTabWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QAbstractItemView, QCheckBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QGridLayout, QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox, QPlainTextEdit, QPushButton, QSplitter, QTabWidget, QVBoxLayout, QWidget
 
 from .. import paths
 from ..bootstrap import load_settings, save_settings
@@ -25,14 +26,20 @@ from .panes import ActivityPane, AnalyticsPane, CommandBar, CompaniesPane, Descr
 from .renderers import html_shell
 from .tasks import (
     build_roadmap_payload,
+    delete_storage_category_task,
     export_jobs_task,
     import_sources_task,
     initialize_database_task,
+    load_ai_status_task,
     load_analytics_view_task,
     load_job_detail_view_task,
     load_jobs_view_task,
+    load_source_config_rows,
+    load_storage_category_rows_task,
     preview_source_import_task,
     probe_watchlist_and_import_task,
+    save_source_config_edit_task,
+    validate_source_edit_values,
 )
 from .theme import APP_STYLE, PANE_SPACING, WINDOW_SIZE
 from .utils import compact_text, stable_signature
@@ -80,6 +87,7 @@ class MainWindow(QMainWindow):
         self.current_selected_job_detail: Optional[Dict[str, Any]] = None
         self.current_analytics_payload: Optional[Dict[str, Any]] = None
         self.current_roadmap_payload: Optional[Dict[str, Any]] = None
+        self.current_ai_status: Optional[Dict[str, Any]] = None
         self.loaded_payload_signatures: Dict[str, str] = {}
         self.browser_html_signatures: Dict[str, str] = {}
         self.analytics_cache: OrderedDict[str, Dict[str, Any]] = OrderedDict()
@@ -87,7 +95,6 @@ class MainWindow(QMainWindow):
         self.dirty_tabs = {"description", "analytics", "roadmap"}
         self.reset_company_filter_on_counts = False
         self.scrape_worker: Optional[ScrapeWorker] = None
-        self.pending_migration_message = self._build_migration_message()
         self.activity_history: Deque[str] = deque(maxlen=2000)
         self.pending_activity_lines: List[str] = []
         self.activity_needs_full_sync = False
@@ -100,6 +107,7 @@ class MainWindow(QMainWindow):
         self.scrape_progress_timer.setSingleShot(True)
         self.scrape_progress_timer.setInterval(180)
         self.scrape_progress_timer.timeout.connect(self.flush_scrape_progress)
+        self.export_cancel_state: Optional[Dict[str, bool]] = None
 
         self.jobs_refresh_timer = QTimer(self)
         self.jobs_refresh_timer.setSingleShot(True)
@@ -152,8 +160,12 @@ class MainWindow(QMainWindow):
         self.tools_menu = self.command_bar.tools_menu
         self.import_action = self._create_menu_action(self.tools_menu, "Import Sources...", self.import_sources)
         self.export_action = self._create_menu_action(self.tools_menu, "Export Filtered JSON...", self.export_filtered_json)
+        self.cancel_export_action = self._create_menu_action(self.tools_menu, "Cancel Export", self.cancel_export)
+        self.cancel_export_action.setEnabled(False)
         self.tools_menu.addSeparator()
         self.activity_action = self._create_menu_action(self.tools_menu, "Activity...", self.toggle_activity)
+        self.storage_action = self._create_menu_action(self.tools_menu, "Storage...", self.show_storage_manager)
+        self.tutorial_action = self._create_menu_action(self.tools_menu, "Getting Started...", self.show_startup_tutorial)
         self.open_logs_action = self._create_menu_action(self.tools_menu, "Open Logs Folder", self.open_logs_folder)
         self.open_backups_action = self._create_menu_action(self.tools_menu, "Open Backups Folder", self.open_backups_folder)
         self.open_reports_action = self._create_menu_action(self.tools_menu, "Open Reports Folder", self.open_reports_folder)
@@ -170,6 +182,7 @@ class MainWindow(QMainWindow):
             sources_path=str(self.sources_path),
             watchlist_path=str(self.source_watchlist_path),
             log_path=str(paths.log_path()),
+            reports_path=str(paths.reports_dir()),
             local_ai_config=local_ai_config,
             parent=self,
         )
@@ -181,18 +194,23 @@ class MainWindow(QMainWindow):
         self.interests_edit = self.settings_panel.interests_edit
         self.exclude_edit = self.settings_panel.exclude_edit
         self.concurrency_spin = self.settings_panel.concurrency_spin
+        self.http_concurrency_spin = self.settings_panel.http_concurrency_spin
         self.hn_parser_combo = self.settings_panel.hn_parser_combo
         self.local_ai_url_edit = self.settings_panel.local_ai_url_edit
         self.local_ai_model_edit = self.settings_panel.local_ai_model_edit
+        self.ai_status_label = self.settings_panel.ai_status_label
+        self.ai_status_button = self.settings_panel.ai_status_button
         self.log_path_edit = self.settings_panel.log_path_edit
+        self.reports_path_edit = self.settings_panel.reports_path_edit
         self.interests_edit.setText(", ".join(core.DEFAULT_INTEREST_TERMS))
         self.exclude_edit.setText(", ".join(core.DEFAULT_EXCLUDE_WORDS))
+        self.http_concurrency_spin.setValue(int(self.settings.get("http_concurrency") or 32))
         self.local_ai_url_edit.setText(str(self.settings.get("local_ai_base_url") or local_ai_config.get("base_url") or ""))
         self.local_ai_model_edit.setText(str(self.settings.get("local_ai_model") or local_ai_config.get("model") or ""))
         self.settings_dialog = self._create_panel_dialog(
             title="Settings",
             panel=self.settings_panel,
-            width=1560,
+            width=1320,
             height=240,
         )
 
@@ -232,6 +250,9 @@ class MainWindow(QMainWindow):
         self.stack_filter_combo = self.jobs_panel.stack_filter_combo
         self.hn_review_combo = self.jobs_panel.hn_review_combo
         self.search_edit = self.jobs_panel.search_edit
+        self.filter_preset_combo = self.jobs_panel.filter_preset_combo
+        self.save_filter_preset_button = self.jobs_panel.save_filter_preset_button
+        self.delete_filter_preset_button = self.jobs_panel.delete_filter_preset_button
         self.jobs_summary_label = self.jobs_panel.summary_label
         self.jobs_table = self.jobs_panel.table
 
@@ -270,6 +291,7 @@ class MainWindow(QMainWindow):
         self.last_scrape_report_label = self.sources_tab.last_scrape_report_label
         self.source_probe_button = self.sources_tab.source_probe_button
         self.source_focus_button = self.sources_tab.source_focus_button
+        self.source_edit_button = self.sources_tab.source_edit_button
         self.open_source_in_browser_action = self._create_menu_action(self.tools_menu, "Open Selected Source URL", self.open_selected_source_in_browser)
         self.sources_label = self.sources_tab.sources_label
         self.sources_table = self.sources_tab.table
@@ -306,6 +328,9 @@ class MainWindow(QMainWindow):
         self.stack_filter_combo.currentIndexChanged.connect(self.schedule_jobs_refresh)
         self.hn_review_combo.currentIndexChanged.connect(self.schedule_jobs_refresh)
         self.search_edit.textChanged.connect(self.schedule_jobs_refresh)
+        self.filter_preset_combo.currentIndexChanged.connect(self.load_selected_filter_preset)
+        self.save_filter_preset_button.clicked.connect(self.save_current_filter_preset)
+        self.delete_filter_preset_button.clicked.connect(self.delete_current_filter_preset)
         self.jobs_table.selectionModel().selectionChanged.connect(self.on_jobs_selection_changed)
 
         self.roadmap_scope_combo.currentIndexChanged.connect(self.on_roadmap_scope_changed)
@@ -315,6 +340,8 @@ class MainWindow(QMainWindow):
         self.source_health_filter_combo.currentIndexChanged.connect(lambda _index: self.apply_source_table_filter())
         self.source_probe_button.clicked.connect(self.probe_watchlist_and_import)
         self.source_focus_button.clicked.connect(self.focus_selected_source_in_workbench)
+        self.source_edit_button.clicked.connect(self.edit_selected_source)
+        self.refresh_filter_preset_options()
 
         for widget in [self.db_path_edit, self.sources_path_edit, self.watchlist_path_edit, self.interests_edit, self.exclude_edit, self.local_ai_url_edit, self.local_ai_model_edit]:
             widget.textChanged.connect(self.update_command_summary)
@@ -323,9 +350,11 @@ class MainWindow(QMainWindow):
         self.watchlist_path_edit.editingFinished.connect(self.on_path_settings_changed)
         self.local_ai_url_edit.editingFinished.connect(self.on_local_ai_settings_changed)
         self.local_ai_model_edit.editingFinished.connect(self.on_local_ai_settings_changed)
+        self.ai_status_button.clicked.connect(lambda: self.refresh_ai_status(force=True))
         self.remote_checkbox.stateChanged.connect(self.update_command_summary)
         self.india_checkbox.stateChanged.connect(self.update_command_summary)
         self.concurrency_spin.valueChanged.connect(self.update_command_summary)
+        self.http_concurrency_spin.valueChanged.connect(self.update_command_summary)
         self.hn_parser_combo.currentIndexChanged.connect(self.update_command_summary)
 
     def set_workspace_ready(self, ready: bool) -> None:
@@ -339,6 +368,7 @@ class MainWindow(QMainWindow):
     def startup_initialize(self) -> None:
         """Open and migrate SQLite off the GUI thread before the first data refresh."""
         self.update_command_summary()
+        self.refresh_ai_status(force=False)
         self.set_workspace_ready(False)
         self.queue_request(
             key="db_init",
@@ -354,9 +384,7 @@ class MainWindow(QMainWindow):
         """Enable the workspace and kick off the initial pane refresh once SQLite is ready."""
         self.set_workspace_ready(True)
         self.reload_active_surface(force=True)
-        if self.pending_migration_message:
-            QMessageBox.information(self, "Workspace Migration", self.pending_migration_message)
-            self.pending_migration_message = ""
+        QTimer.singleShot(0, self.maybe_show_startup_tutorial)
 
     def toggle_settings(self) -> None:
         """Open the settings dialog and bring it to the front."""
@@ -406,33 +434,284 @@ class MainWindow(QMainWindow):
         QApplication.clipboard().setText(summary)
         self.append_activity("Diagnostics summary copied to clipboard.")
 
-    def _build_migration_message(self) -> str:
-        """Summarize one workspace migration outcome for the operator."""
-        migration = dict(self.settings.get("migration") or {})
-        if not migration.get("completed"):
-            return ""
-        source_root = str(migration.get("source_root") or "").strip()
-        errors = list(migration.get("errors") or [])
-        if errors:
-            return "Workspace migration completed with warnings.\n\n" + "\n".join(errors)
-        if source_root:
-            return f"Migrated legacy runtime data from:\n{source_root}\n\nto:\n{paths.default_workspace_root()}"
-        return ""
+    @staticmethod
+    def _path_size(path: Path) -> int:
+        """Return a best-effort byte size for one file or directory tree."""
+        if not path.exists():
+            return 0
+        if path.is_file():
+            try:
+                return path.stat().st_size
+            except OSError:
+                return 0
+        total = 0
+        try:
+            children = list(path.rglob("*"))
+        except OSError:
+            return 0
+        for child in children:
+            if not child.is_file():
+                continue
+            try:
+                total += child.stat().st_size
+            except OSError:
+                continue
+        return total
+
+    @staticmethod
+    def _format_bytes(size: int) -> str:
+        value = float(max(0, int(size)))
+        for suffix in ("B", "KB", "MB", "GB"):
+            if value < 1024.0 or suffix == "GB":
+                if suffix == "B":
+                    return f"{int(value)} {suffix}"
+                return f"{value:.1f} {suffix}"
+            value /= 1024.0
+        return f"{value:.1f} GB"
+
+    def storage_categories(self) -> List[Dict[str, Any]]:
+        """Return visible storage categories with deletion policy."""
+        root = paths.default_workspace_root()
+        return [
+            {"key": "db", "label": "DB", "path": self.db_path, "deletable": False},
+            {"key": "sources", "label": "Active sources", "path": self.sources_path, "deletable": False},
+            {"key": "watchlist", "label": "Active watchlist", "path": self.source_watchlist_path, "deletable": False},
+            {"key": "settings", "label": "Settings", "path": paths.settings_path(), "deletable": False},
+            {"key": "logs", "label": "Logs", "path": paths.logs_dir(), "deletable": True},
+            {"key": "backups", "label": "Backups", "path": paths.backups_dir(), "deletable": True},
+            {"key": "reports", "label": "Reports", "path": paths.reports_dir(), "deletable": True},
+            {"key": "exports", "label": "Exports", "path": paths.exports_dir(), "deletable": True},
+            {"key": "caches", "label": "Caches", "path": root / "cache", "deletable": True},
+        ]
+
+    def storage_category_rows(self) -> List[Dict[str, Any]]:
+        """Return storage categories with current byte sizes."""
+        return load_storage_category_rows_task(self.storage_categories())
+
+    def delete_storage_category(self, key: str) -> bool:
+        """Delete files for one generated storage category."""
+        categories = {str(item["key"]): item for item in self.storage_categories()}
+        category = categories.get(str(key))
+        if not category or not bool(category.get("deletable")):
+            return False
+        try:
+            result = delete_storage_category_task(category)
+        except RuntimeError as exc:
+            QMessageBox.warning(self, "Storage", str(exc))
+            return False
+        if bool(result.get("deleted")):
+            self.append_activity(f"Deleted generated storage category: {category['label']} ({result.get('path')})")
+            return True
+        return False
+
+    def _build_storage_manager_dialog(self) -> QDialog:
+        """Build the storage visibility dialog without scanning sizes on the GUI thread."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Storage")
+        layout = QVBoxLayout(dialog)
+        layout.setContentsMargins(PANE_SPACING, PANE_SPACING, PANE_SPACING, PANE_SPACING)
+        layout.setSpacing(PANE_SPACING)
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(8)
+        grid.setVerticalSpacing(6)
+        layout.addLayout(grid)
+        grid.addWidget(QLabel("Category", dialog), 0, 0)
+        grid.addWidget(QLabel("Size", dialog), 0, 1)
+        grid.addWidget(QLabel("Path", dialog), 0, 2)
+        size_labels: Dict[str, QLabel] = {}
+        path_labels: Dict[str, QLabel] = {}
+        buttons: Dict[str, QPushButton] = {}
+        categories = self.storage_categories()
+        for row_index, category in enumerate(categories, start=1):
+            category_key = str(category["key"])
+            grid.addWidget(QLabel(str(category["label"]), dialog), row_index, 0)
+            size_label = QLabel("Scanning...", dialog)
+            path_label = QLabel(compact_text(str(category["path"]), 110), dialog)
+            button = QPushButton("Delete", dialog)
+            button.setEnabled(bool(category.get("deletable")) and Path(category["path"]).exists())
+            button.clicked.connect(lambda _checked=False, key=category_key, dlg=dialog: self.queue_storage_category_delete(dlg, key))
+            size_labels[category_key] = size_label
+            path_labels[category_key] = path_label
+            buttons[category_key] = button
+            grid.addWidget(size_label, row_index, 1)
+            grid.addWidget(path_label, row_index, 2)
+            grid.addWidget(button, row_index, 3)
+        buttons_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Close, dialog)
+        buttons_box.rejected.connect(dialog.reject)
+        layout.addWidget(buttons_box)
+        dialog.resize(980, 360)
+        setattr(dialog, "_storage_closed", False)
+        setattr(dialog, "_storage_size_labels", size_labels)
+        setattr(dialog, "_storage_path_labels", path_labels)
+        setattr(dialog, "_storage_buttons", buttons)
+        dialog.finished.connect(lambda _code, dlg=dialog: setattr(dlg, "_storage_closed", True))
+        return dialog
+
+    def refresh_storage_manager(self, dialog: QDialog, *, force: bool = False) -> None:
+        """Refresh storage sizes in the background for one open storage dialog."""
+        if getattr(dialog, "_storage_closed", False):
+            return
+        size_labels = getattr(dialog, "_storage_size_labels", {})
+        for label in size_labels.values():
+            label.setText("Scanning...")
+        categories = self.storage_categories()
+        self.queue_request(
+            key="storage_scan",
+            pane="global",
+            label="Scanning storage",
+            signature=[(str(category["key"]), str(category["path"])) for category in categories],
+            fn=lambda categories=categories: load_storage_category_rows_task(categories),
+            on_success=lambda rows, dlg=dialog: self.on_storage_rows_loaded(dlg, rows),
+            force=force,
+        )
+
+    def on_storage_rows_loaded(self, dialog: QDialog, rows: Sequence[Dict[str, Any]]) -> None:
+        """Update one storage dialog with the latest background size scan."""
+        if getattr(dialog, "_storage_closed", False):
+            return
+        size_labels = getattr(dialog, "_storage_size_labels", {})
+        path_labels = getattr(dialog, "_storage_path_labels", {})
+        buttons = getattr(dialog, "_storage_buttons", {})
+        by_key = {str(row["key"]): row for row in rows}
+        for category_key, row in by_key.items():
+            if category_key in size_labels:
+                size_labels[category_key].setText(str(row.get("size_label") or "0 B"))
+            if category_key in path_labels:
+                path_labels[category_key].setText(compact_text(str(row.get("path") or ""), 110))
+            if category_key in buttons:
+                buttons[category_key].setEnabled(bool(row.get("deletable")) and Path(row["path"]).exists())
+
+    def queue_storage_category_delete(self, dialog: QDialog, category_key: str) -> None:
+        """Delete one generated storage category off the GUI thread."""
+        categories = {str(item["key"]): item for item in self.storage_categories()}
+        category = categories.get(str(category_key))
+        if not category:
+            return
+        if QMessageBox.question(self, "Storage", f"Delete generated files in {category['label']}?\n\n{category['path']}") != QMessageBox.StandardButton.Yes:
+            return
+        size_labels = getattr(dialog, "_storage_size_labels", {})
+        buttons = getattr(dialog, "_storage_buttons", {})
+        if category_key in size_labels:
+            size_labels[category_key].setText("Deleting...")
+        self.queue_request(
+            key=f"storage_delete:{category_key}",
+            pane="global",
+            label=f"Deleting {category['label']}",
+            signature={"key": category_key, "path": str(category["path"]), "exists": Path(category["path"]).exists()},
+            fn=lambda category=dict(category): delete_storage_category_task(category),
+            on_success=lambda result, dlg=dialog: self.on_storage_category_deleted(dlg, result),
+            force=True,
+            control=buttons.get(category_key),
+        )
+
+    def on_storage_category_deleted(self, dialog: QDialog, result: Dict[str, Any]) -> None:
+        """Record one completed storage deletion and refresh visible size data."""
+        if bool(result.get("deleted")):
+            self.append_activity(
+                f"Deleted generated storage category: {result.get('label') or result.get('key')} ({result.get('path')})"
+            )
+        self.refresh_storage_manager(dialog, force=True)
+
+    def show_storage_manager(self) -> None:
+        """Open generated-file storage visibility and cleanup dialog."""
+        dialog = self._build_storage_manager_dialog()
+        self.refresh_storage_manager(dialog, force=True)
+        dialog.exec()
+
+    def mark_startup_tutorial_dismissed(self) -> None:
+        """Persist that the first-run tutorial has been seen."""
+        self.settings["first_run_tutorial_dismissed"] = True
+        save_settings(self.settings)
+
+    def maybe_show_startup_tutorial(self) -> None:
+        """Show the startup guide once for a new workspace."""
+        if bool(self.settings.get("first_run_tutorial_dismissed")):
+            return
+        self.show_startup_tutorial(mark_dismissed=True)
+
+    def show_startup_tutorial(self, _checked: bool = False, *, mark_dismissed: bool = False) -> None:
+        """Open a short non-modal getting-started guide."""
+        existing = getattr(self, "tutorial_dialog", None)
+        if existing is not None and existing.isVisible():
+            existing.raise_()
+            existing.activateWindow()
+            return
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Getting Started")
+        dialog.setModal(False)
+        layout = QVBoxLayout(dialog)
+        layout.setContentsMargins(PANE_SPACING, PANE_SPACING, PANE_SPACING, PANE_SPACING)
+        title = QLabel("JobScraper workspace flow", dialog)
+        title.setObjectName("PanelHeader")
+        layout.addWidget(title)
+        guide = QPlainTextEdit(dialog)
+        guide.setReadOnly(True)
+        guide.setPlainText(
+            "\n".join(
+                [
+                    "1. Import or edit sources from Tools and the Sources tab.",
+                    "2. Run Scrape to refresh enabled public sources.",
+                    "3. Filter jobs by company, source family, source row, tag, stack, and search.",
+                    "4. Select a job row to inspect normalized detail and links.",
+                    "5. Export the current filtered jobs view from Tools.",
+                    "6. Use Sources health groups to find blocked, failing, new, and healthy rows.",
+                    "7. Open Storage from Tools to review and delete generated logs, reports, backups, exports, and caches.",
+                ]
+            )
+        )
+        layout.addWidget(guide, 1)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close, dialog)
+        buttons.rejected.connect(dialog.reject)
+        layout.addWidget(buttons)
+        if mark_dismissed:
+            dialog.finished.connect(lambda _code: self.mark_startup_tutorial_dismissed())
+        self.tutorial_dialog = dialog
+        dialog.resize(760, 380)
+        dialog.show()
 
     def persist_settings(self) -> None:
         """Persist the current runtime path and Local AI settings."""
         self.settings["db_path"] = str(self.db_path)
         self.settings["sources_path"] = str(self.sources_path)
         self.settings["source_watchlist_path"] = str(self.source_watchlist_path)
+        self.settings["http_concurrency"] = int(self.http_concurrency_spin.value())
         self.settings["local_ai_base_url"] = self.local_ai_url_edit.text().strip()
         self.settings["local_ai_model"] = self.local_ai_model_edit.text().strip()
         save_settings(self.settings)
+
+    @staticmethod
+    def validate_runtime_paths(db_path: Path, sources_path: Path, watchlist_path: Path) -> List[str]:
+        """Return validation errors for editable runtime file paths."""
+        errors: List[str] = []
+        for label, path in (("DB", db_path), ("Sources", sources_path), ("Watchlist", watchlist_path)):
+            if not str(path).strip():
+                errors.append(f"{label} path is empty.")
+                continue
+            if path.exists() and path.is_dir():
+                errors.append(f"{label} path points to a directory: {path}")
+            parent = path.parent
+            if parent.exists() and not parent.is_dir():
+                errors.append(f"{label} parent is not a directory: {parent}")
+        for label, path in (("Sources", sources_path), ("Watchlist", watchlist_path)):
+            if path.suffix.lower() != ".json":
+                errors.append(f"{label} path must be a .json file: {path}")
+        if db_path.suffix.lower() and db_path.suffix.lower() not in {".sqlite", ".sqlite3", ".db"}:
+            errors.append(f"DB path must be a SQLite file: {db_path}")
+        return errors
 
     def on_path_settings_changed(self) -> None:
         """Persist DB and source path edits from the Settings dialog."""
         new_db_path = Path(self.db_path_edit.text().strip() or str(self.db_path))
         new_sources_path = Path(self.sources_path_edit.text().strip() or str(self.sources_path))
         new_watchlist_path = Path(self.watchlist_path_edit.text().strip() or str(self.source_watchlist_path))
+        errors = self.validate_runtime_paths(new_db_path, new_sources_path, new_watchlist_path)
+        if errors:
+            self.db_path_edit.setText(str(self.db_path))
+            self.sources_path_edit.setText(str(self.sources_path))
+            self.watchlist_path_edit.setText(str(self.source_watchlist_path))
+            QMessageBox.warning(self, "Settings", "\n".join(errors))
+            self.update_command_summary()
+            return
         if new_db_path == self.db_path and new_sources_path == self.sources_path and new_watchlist_path == self.source_watchlist_path:
             self.update_command_summary()
             return
@@ -472,10 +751,58 @@ class MainWindow(QMainWindow):
             os.environ.pop("LOCAL_AI_MODEL", None)
         self.persist_settings()
 
+    def ai_status_signature(self) -> Dict[str, Any]:
+        """Return the inputs that affect the visible AI availability summary."""
+        return {
+            "openai_enabled": bool(os.getenv("OPENAI_API_KEY", "").strip()),
+            "openai_base_url": os.getenv("OPENAI_BASE_URL", "").strip(),
+            "openai_model": os.getenv("OPENAI_MODEL", "").strip(),
+            "local_ai_base_url": self.local_ai_url_edit.text().strip(),
+            "local_ai_model": self.local_ai_model_edit.text().strip(),
+            "local_ai_provider": os.getenv("LOCAL_AI_PROVIDER", "").strip(),
+        }
+
+    def refresh_ai_status(self, *, force: bool = False) -> None:
+        """Check OpenAI and Local AI availability without blocking the UI."""
+        signature = self.ai_status_signature()
+        if (
+            not force
+            and self.current_ai_status is not None
+            and self.request_signatures.get("ai_status") == stable_signature(signature)
+        ):
+            self.render_ai_status(self.current_ai_status, log_activity=False)
+            return
+        self.ai_status_label.setText("Checking AI availability...")
+        self.queue_request(
+            key="ai_status",
+            pane="global",
+            label="Checking AI availability",
+            signature=signature,
+            fn=load_ai_status_task,
+            on_success=self.on_ai_status_loaded,
+            force=force,
+            control=self.ai_status_button,
+        )
+
+    def render_ai_status(self, payload: Dict[str, Any], *, log_activity: bool) -> None:
+        """Apply one AI availability snapshot to the settings UI."""
+        summary = str(payload.get("summary") or "AI availability unavailable")
+        detail = str(payload.get("detail") or "").strip()
+        self.ai_status_label.setText(summary)
+        self.ai_status_label.setToolTip(detail or summary)
+        if log_activity:
+            self.append_activity(f"AI availability: {payload.get('activity') or summary}")
+
+    def on_ai_status_loaded(self, payload: Dict[str, Any]) -> None:
+        """Render one completed AI availability snapshot into the settings panel."""
+        self.current_ai_status = dict(payload)
+        self.render_ai_status(self.current_ai_status, log_activity=True)
+
     def on_local_ai_settings_changed(self) -> None:
         """Apply Local AI settings used by optional parser flows."""
         self.apply_local_ai_settings()
         self.update_command_summary()
+        self.refresh_ai_status(force=False)
 
     def workbench_visible(self) -> bool:
         """Return whether the main workbench tab is currently active."""
@@ -564,6 +891,7 @@ class MainWindow(QMainWindow):
             f"interests: {len([x for x in self.parse_csv(self.interests_edit.text()) if x])} | "
             f"exclude: {len([x for x in self.parse_csv(self.exclude_edit.text()) if x])} | "
             f"concurrency: {self.concurrency_spin.value()} | "
+            f"http: {self.http_concurrency_spin.value()} | "
             f"hn-parse: {str(self.hn_parser_combo.currentText() or 'Auto').strip()}"
             + (f" | local-ai: {compact_text(local_ai_model, 24)}" if local_ai_model else "")
         )
@@ -590,6 +918,111 @@ class MainWindow(QMainWindow):
             "hn_mode": hn_mode,
             "founding_only": self.founding_only_checkbox.isChecked(),
         }
+
+    def current_filter_preset(self) -> Dict[str, Any]:
+        """Return the persisted filter preset shape."""
+        filters = self.current_filters()
+        filters["group_by_company"] = self.group_by_company_checkbox.isChecked()
+        return filters
+
+    def filter_presets(self) -> Dict[str, Dict[str, Any]]:
+        """Return saved filter presets from workspace settings."""
+        raw = self.settings.get("filter_presets")
+        if not isinstance(raw, dict):
+            return {}
+        return {str(name): dict(value) for name, value in raw.items() if isinstance(value, dict)}
+
+    def refresh_filter_preset_options(self, selected: str = "") -> None:
+        """Reload the filter preset selector from persisted settings."""
+        presets = self.filter_presets()
+        self.filter_preset_combo.blockSignals(True)
+        self.filter_preset_combo.clear()
+        self.filter_preset_combo.addItem("Filter presets", "")
+        selected_index = 0
+        for index, name in enumerate(sorted(presets), start=1):
+            self.filter_preset_combo.addItem(name, name)
+            if name == selected:
+                selected_index = index
+        self.filter_preset_combo.setCurrentIndex(selected_index)
+        self.filter_preset_combo.blockSignals(False)
+
+    def save_current_filter_preset(self) -> None:
+        """Prompt for a preset name and persist the current filters."""
+        name, ok = QInputDialog.getText(self, "Save Filter Preset", "Name")
+        name = str(name or "").strip()
+        if not ok or not name:
+            return
+        presets = self.filter_presets()
+        presets[name] = self.current_filter_preset()
+        self.settings["filter_presets"] = presets
+        save_settings(self.settings)
+        self.refresh_filter_preset_options(selected=name)
+
+    def delete_current_filter_preset(self) -> None:
+        """Delete the selected saved filter preset."""
+        name = str(self.filter_preset_combo.currentData() or "")
+        if not name:
+            return
+        presets = self.filter_presets()
+        if name in presets:
+            presets.pop(name, None)
+            self.settings["filter_presets"] = presets
+            save_settings(self.settings)
+        self.refresh_filter_preset_options()
+
+    @staticmethod
+    def _set_combo_data(combo: Any, value: Any) -> None:
+        for index in range(combo.count()):
+            if combo.itemData(index) == value or str(combo.itemData(index) or "") == str(value or ""):
+                combo.setCurrentIndex(index)
+                return
+        combo.setCurrentIndex(0)
+
+    def load_selected_filter_preset(self) -> None:
+        """Apply the selected saved filter preset."""
+        name = str(self.filter_preset_combo.currentData() or "")
+        if not name:
+            return
+        preset = self.filter_presets().get(name)
+        if not preset:
+            self.refresh_filter_preset_options()
+            return
+        widgets = [
+            self.matching_only_checkbox,
+            self.open_only_checkbox,
+            self.group_by_company_checkbox,
+            self.founding_only_checkbox,
+            self.portal_filter_combo,
+            self.source_filter_combo,
+            self.source_tag_combo,
+            self.stack_filter_combo,
+            self.hn_review_combo,
+            self.search_edit,
+        ]
+        for widget in widgets:
+            widget.blockSignals(True)
+        try:
+            self.matching_only_checkbox.setChecked(bool(preset.get("matching_only", True)))
+            self.open_only_checkbox.setChecked(bool(preset.get("open_only", True)))
+            self.group_by_company_checkbox.setChecked(bool(preset.get("group_by_company", False)))
+            self.founding_only_checkbox.setChecked(bool(preset.get("founding_only", False)))
+            self._set_combo_data(self.portal_filter_combo, str(preset.get("portal") or ""))
+            self.refresh_source_filter_options()
+            self.source_filter_combo.blockSignals(True)
+            self._set_combo_data(self.source_filter_combo, int(preset.get("source_id") or 0))
+            self.refresh_hn_review_state()
+            self._set_combo_data(self.source_tag_combo, str(preset.get("source_tag") or ""))
+            self._set_combo_data(self.stack_filter_combo, str(preset.get("stack") or ""))
+            if self.hn_review_combo.isEnabled():
+                self._set_combo_data(self.hn_review_combo, str(preset.get("hn_mode") or ""))
+            self.search_edit.setText(str(preset.get("search") or ""))
+            self.company_model.set_checked_companies(list(preset.get("companies") or []))
+        finally:
+            for widget in widgets:
+                widget.blockSignals(False)
+        self.reload_stacks(force=True)
+        self.reload_company_counts(force=True)
+        self.schedule_jobs_refresh()
 
     def current_non_company_filters(self) -> Dict[str, Any]:
         """Return the active filters without company narrowing for sidebar counts."""
@@ -850,6 +1283,7 @@ class MainWindow(QMainWindow):
         fn: Callable[[], Any],
         on_success: Callable[[Any], None],
         force: bool = False,
+        control: Optional[Any] = None,
     ) -> None:
         """Schedule one pane refresh in the shared worker pool and ignore stale completions."""
         sig = stable_signature(signature)
@@ -859,7 +1293,7 @@ class MainWindow(QMainWindow):
         self.logger.info("queue_request key=%s pane=%s force=%s", key, pane, force)
         token = self.next_token(key)
         task_id = f"{key}:{token}"
-        self.start_task(task_id, pane, label)
+        self.start_task(task_id, pane, label, control=control)
         task = BackgroundTask(key=key, token=token, fn=fn)
         task.signals.finished.connect(lambda finished_key, finished_token, result, cb=on_success, tid=task_id: self.handle_request_finished(tid, finished_key, finished_token, cb, result))
         task.signals.failed.connect(lambda failed_key, failed_token, error, tid=task_id: self.handle_request_failed(tid, failed_key, failed_token, error))
@@ -901,6 +1335,112 @@ class MainWindow(QMainWindow):
         if not (0 <= row_index < len(self.sources_model.rows)):
             return None
         return dict(self.sources_model.rows[row_index])
+
+    @staticmethod
+    def _source_identity(row: Dict[str, Any]) -> tuple[str, str, str, str]:
+        return (
+            str(row.get("company") or "").strip().casefold(),
+            str(row.get("ats") or "").strip().casefold(),
+            str(row.get("token") or "").strip(),
+            str(row.get("url") or "").strip(),
+        )
+
+    def _load_active_source_config_rows(self) -> List[Dict[str, Any]]:
+        """Load the editable source JSON rows, copying bundled defaults if needed."""
+        return load_source_config_rows(self.sources_path)
+
+    @staticmethod
+    def validate_source_edit_values(source: Dict[str, Any]) -> str:
+        """Return an error string for invalid editable source values."""
+        return validate_source_edit_values(source)
+
+    def save_source_config_edit(self, selected: Dict[str, Any], edited_source: Dict[str, Any]) -> Dict[str, Any]:
+        """Write one source JSON edit after validation and backup."""
+        return save_source_config_edit_task(self.db_path, self.sources_path, selected, edited_source)
+
+    def queue_source_config_edit(self, selected: Dict[str, Any], edited_source: Dict[str, Any]) -> None:
+        """Persist one source edit in the worker pool instead of the GUI thread."""
+        self.queue_request(
+            key="source_edit",
+            pane="sources",
+            label="Saving source edit",
+            signature={
+                "db_path": str(self.db_path),
+                "sources_path": str(self.sources_path),
+                "selected": self._source_identity(selected),
+                "edited": dict(edited_source),
+            },
+            fn=lambda: save_source_config_edit_task(self.db_path, self.sources_path, selected, edited_source),
+            on_success=self.on_source_config_edit_saved,
+            force=True,
+            control=self.source_edit_button,
+        )
+
+    def on_source_config_edit_saved(self, result: Dict[str, Any]) -> None:
+        """Refresh source-dependent panes after one source edit is applied."""
+        source = dict(result.get("source") or {})
+        self.data_epoch += 1
+        self.loaded_payload_signatures.clear()
+        self.mark_analysis_dirty("description")
+        self.mark_analysis_dirty("analytics")
+        self.mark_analysis_dirty("roadmap")
+        self.append_activity(
+            f"Updated source row: {source.get('company') or 'source'} "
+            f"backup={result.get('backup_path')}"
+        )
+        self.reload_sources(force=True)
+        self.reload_company_counts(force=True)
+        self.reload_jobs(force=True)
+
+    def edit_selected_source(self) -> None:
+        """Edit the selected source row in the active source JSON."""
+        selected = self.selected_source_row()
+        if not selected:
+            QMessageBox.information(self, "Edit Source", "Select a source row first.")
+            return
+        try:
+            rows = self._load_active_source_config_rows()
+        except (OSError, json.JSONDecodeError, ValueError) as exc:
+            QMessageBox.warning(self, "Edit Source", f"Could not read source file:\n{exc}")
+            return
+        target_identity = self._source_identity(selected)
+        target_index = next((index for index, row in enumerate(rows) if self._source_identity(row) == target_identity), -1)
+        if target_index < 0:
+            QMessageBox.warning(self, "Edit Source", "Selected source row was not found in the active source file.")
+            return
+        source = dict(rows[target_index])
+
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Edit Source")
+        form = QFormLayout(dialog)
+        enabled_box = QCheckBox("Enabled", dialog)
+        enabled_box.setChecked(bool(source.get("enabled", True)))
+        ats_edit = QLineEdit(str(source.get("ats") or ""), dialog)
+        url_edit = QLineEdit(str(source.get("url") or source.get("entry_url") or ""), dialog)
+        tags_edit = QLineEdit(", ".join(str(tag) for tag in source.get("tags") or []), dialog)
+        notes_edit = QPlainTextEdit(str(source.get("notes") or ""), dialog)
+        notes_edit.setFixedHeight(80)
+        form.addRow("Enabled", enabled_box)
+        form.addRow("ATS/source type", ats_edit)
+        form.addRow("URL", url_edit)
+        form.addRow("Tags", tags_edit)
+        form.addRow("Notes", notes_edit)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel, dialog)
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        form.addRow(buttons)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        ats = ats_edit.text().strip().lower()
+        url = url_edit.text().strip()
+        source["enabled"] = enabled_box.isChecked()
+        source["ats"] = ats
+        source["url"] = url
+        source["entry_url"] = url or str(source.get("entry_url") or "")
+        source["tags"] = self.parse_csv(tags_edit.text())
+        source["notes"] = notes_edit.toPlainText().strip()
+        self.queue_source_config_edit(selected, source)
 
     def reload_sources(self, *, force: bool = False) -> None:
         """Load the source-admin table from SQLite."""
@@ -981,6 +1521,7 @@ class MainWindow(QMainWindow):
         """Update source-diagnostics affordances from the current source-row selection."""
         row = self.selected_source_row()
         self.source_focus_button.setEnabled(bool(row))
+        self.source_edit_button.setEnabled(bool(row))
         self.open_source_in_browser_action.setEnabled(bool(row))
         if row:
             source_name = str(row.get("company") or "source")
@@ -1198,8 +1739,9 @@ class MainWindow(QMainWindow):
         """Update the jobs model, summary text, and restored selection."""
         previous_selected = self.current_selected_job_id
         self.current_jobs = [dict(row) for row in payload.get("jobs") or []]
-        self.jobs_model.set_rows(payload.get("rows") or [])
-        self.apply_job_spans()
+        rows_changed = self.jobs_model.set_rows(payload.get("rows") or [], signature=payload.get("row_signature"))
+        if rows_changed:
+            self.apply_job_spans()
         filters = self.current_filters()
         source_row = self.current_source_row_filter()
         source_scope = compact_text(str(source_row.get("company") or "all"), 40) if source_row else "all"
@@ -1215,10 +1757,18 @@ class MainWindow(QMainWindow):
 
     def apply_job_spans(self) -> None:
         """Apply full-row spans for grouped company header rows."""
+        span_signature = tuple(
+            (row_index, int(row.get("count") or 0))
+            for row_index, row in enumerate(self.jobs_model.rows)
+            if row.get("row_type") == "group"
+        )
+        if span_signature == getattr(self, "_job_span_signature", None):
+            return
         self.jobs_table.clearSpans()
         for row_index, row in enumerate(self.jobs_model.rows):
             if row.get("row_type") == "group":
                 self.jobs_table.setSpan(row_index, 0, 1, self.jobs_model.columnCount())
+        self._job_span_signature = span_signature
 
     def restore_job_selection(self, preferred_job_id: Optional[int]) -> None:
         """Restore a stable job selection after the jobs model is refreshed."""
@@ -1234,8 +1784,11 @@ class MainWindow(QMainWindow):
                     row = idx
                     break
         if row >= 0:
-            selection.select(self.jobs_model.index(row, 0), selection.SelectionFlag.ClearAndSelect | selection.SelectionFlag.Rows)
-            self.jobs_table.scrollTo(self.jobs_model.index(row, 0), QAbstractItemView.ScrollHint.PositionAtCenter)
+            index = self.jobs_model.index(row, 0)
+            selection.select(index, selection.SelectionFlag.ClearAndSelect | selection.SelectionFlag.Rows)
+            visual_rect = self.jobs_table.visualRect(index)
+            if not visual_rect.isValid() or not self.jobs_table.viewport().rect().intersects(visual_rect):
+                self.jobs_table.scrollTo(index, QAbstractItemView.ScrollHint.PositionAtCenter)
         else:
             self.current_selected_job_id = None
             self.current_selected_job_preview = None
@@ -1624,7 +2177,12 @@ class MainWindow(QMainWindow):
             return
         filters = self.current_filters()
         task_id = "export"
-        self.start_task(task_id, "jobs", "Exporting filtered jobs", control=self.export_action)
+        cancel_state = {"cancelled": False}
+        self.export_cancel_state = cancel_state
+        self.cancel_export_action.setEnabled(True)
+        self.jobs_summary_label.setText(f"Exporting filtered jobs to {selected}")
+        self.append_activity(f"Export started: {selected}")
+        self.start_task(task_id, "jobs", f"Exporting to {Path(selected).name}", control=self.export_action)
         token = self.next_token(task_id)
         task = BackgroundTask(
             key=task_id,
@@ -1642,18 +2200,37 @@ class MainWindow(QMainWindow):
                 founding_only=filters["founding_only"],
                 search=filters["search"],
                 stack=filters["stack"],
+                should_cancel=lambda: bool(cancel_state.get("cancelled")),
             ),
         )
         task.signals.finished.connect(lambda key, finished_token, result, tid=task_id: self.on_export_done(tid, finished_token, token, result))
         task.signals.failed.connect(lambda key, finished_token, error, tid=task_id: self.on_simple_task_failed(tid, error))
         self.thread_pool.start(task)
 
+    def cancel_export(self) -> None:
+        """Request cooperative cancellation for the active export task."""
+        if not self.export_cancel_state:
+            return
+        self.export_cancel_state["cancelled"] = True
+        self.cancel_export_action.setEnabled(False)
+        self.update_task_progress("export", 0, label="Cancelling export")
+        self.append_activity("Cancel requested for export.")
+
     def on_export_done(self, task_id: str, finished_token: int, expected_token: int, result: Dict[str, Any]) -> None:
         """Record the export result in the activity log."""
         self.finish_task(task_id)
+        self.cancel_export_action.setEnabled(False)
+        self.export_cancel_state = None
         if finished_token != expected_token:
             return
-        self.append_activity(f"Exported {int(result.get('count') or 0)} jobs to {result.get('out_path')}")
+        out_path = str(result.get("out_path") or "")
+        if bool(result.get("cancelled")):
+            self.jobs_summary_label.setText(f"Export cancelled: {out_path}")
+            self.append_activity(f"Export cancelled: {out_path}")
+            return
+        count = int(result.get("count") or 0)
+        self.jobs_summary_label.setText(f"Exported {count} jobs to {out_path}")
+        self.append_activity(f"Exported {count} jobs to {out_path}")
 
     def run_scrape(self) -> None:
         """Start the scrape worker and expose progress in the activity strips."""
@@ -1667,6 +2244,7 @@ class MainWindow(QMainWindow):
             enable_remote=self.remote_checkbox.isChecked(),
             enable_india_office_hybrid=self.india_checkbox.isChecked(),
             concurrency=int(self.concurrency_spin.value()),
+            http_concurrency=int(self.http_concurrency_spin.value()),
             hackernews_parser_engine=str(self.hn_parser_combo.currentData() or "auto"),
         )
         self.scrape_progress_state = {
@@ -1770,12 +2348,37 @@ class MainWindow(QMainWindow):
             label += f" | fetched={fetched}"
         self.last_scrape_report_label.setText(label)
 
+    @staticmethod
+    def should_persist_scrape_log(line: str) -> bool:
+        """Return whether one scrape-progress line is important enough for the file log."""
+        text = str(line or "").strip()
+        if not text:
+            return False
+        if text.startswith(("SCRAPE_SUMMARY ", "Done ", "ERROR ", "Imported ", "No enabled sources found.", "Stop requested")):
+            return True
+        status_word = text.split(" ", 1)[0]
+        return status_word.isupper() and "_" in status_word
+
+    @staticmethod
+    def should_record_scrape_activity(line: str) -> bool:
+        """Return whether one scrape-progress line belongs in the user-facing activity history."""
+        text = str(line or "").strip()
+        if not text:
+            return False
+        if text.startswith(("SCRAPE_SUMMARY ", "Done ", "ERROR ", "Imported ", "No enabled sources found.", "Stop requested")):
+            return True
+        status_word = text.split(" ", 1)[0]
+        return status_word.isupper() and "_" in status_word
+
     def on_scrape_log(self, line: str) -> None:
         """Mirror scrape progress into the activity pane and busy strip."""
-        self.logger.info("scrape_progress %s", compact_text(line, 240))
-        self.append_activity(line)
-        self.update_last_scrape_report(line)
-        self.update_scrape_progress_state(line)
+        text = str(line or "").strip()
+        if self.should_persist_scrape_log(text):
+            self.logger.info("scrape_progress %s", compact_text(text, 240))
+        if self.should_record_scrape_activity(text):
+            self.append_activity(text)
+        self.update_last_scrape_report(text)
+        self.update_scrape_progress_state(text)
         if not self.scrape_progress_timer.isActive():
             self.scrape_progress_timer.start()
 
@@ -1824,6 +2427,9 @@ class MainWindow(QMainWindow):
 
     def on_simple_task_failed(self, task_id: str, error: str) -> None:
         self.finish_task(task_id)
+        if task_id == "export":
+            self.cancel_export_action.setEnabled(False)
+            self.export_cancel_state = None
         self.append_activity(error)
         QMessageBox.warning(self, "Task Failed", compact_text(error, 2000))
 

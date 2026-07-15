@@ -16,8 +16,13 @@ for path in (src_root / "jobscraper" / "resources").glob("*.json"):
 for path in (src_root / "jobscraper" / "assets").glob("*"):
     if path.is_file():
         datas.append((str(path), "jobscraper/assets"))
-hiddenimports = collect_submodules("jobscraper")
+hiddenimports = [
+    module
+    for module in collect_submodules("jobscraper")
+    if module != "jobscraper.ai.questions"
+]
 excludes = [
+    "jobscraper.ai.questions",
     "playwright",
     "PyQt6.QtWebEngineCore",
     "PyQt6.QtWebEngineWidgets",

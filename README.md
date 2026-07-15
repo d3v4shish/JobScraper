@@ -3,7 +3,7 @@
 PyQt desktop app for:
 - scraping public company and job-board sources
 - browsing jobs from SQLite
-- managing direct source health, exports, analytics, and topic roadmaps
+- managing source health, exports, analytics, and topic roadmaps
 
 ## Source run
 
@@ -11,7 +11,7 @@ First-time setup after cloning:
 
 ```bash
 git clone <repo-url>
-cd JobScraper-Public
+cd <repo-dir>
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
@@ -23,7 +23,7 @@ Windows PowerShell:
 
 ```powershell
 git clone <repo-url>
-cd JobScraper-Public
+cd <repo-dir>
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -U pip
 .\.venv\Scripts\python.exe -m pip install -e ".[build,test]"
@@ -60,14 +60,29 @@ Key paths:
 - `Documents\JobScraper\backups\`
 - `Documents\JobScraper\reports\`
 
-On first run, the app auto-migrates the legacy repo-root artifacts when they exist.
+The source tree is code only. Do not store mutable runtime data, sessions, debug captures, or generated databases in the repo.
 The Settings dialog can point the UI at a different SQLite database and source JSON file.
 Source import validates the JSON, shows a preview, asks for confirmation, and creates a SQLite backup before applying changes.
 The source watchlist stores candidate public ATS rows that can be probed from the Sources tab before promotion into `sources.json`.
 Probe reports are saved under `Documents\JobScraper\reports`.
 Application logs rotate under `Documents\JobScraper\logs`; use `Tools -> Open Logs Folder` from the app.
 
-The public release does not seed or support login-backed sources such as LinkedIn or Indeed saved views, subscription sources, local API-token sources, or browser-rendered source discovery.
+The bundled source seed includes direct public company boards, public JSON/RSS feeds, and disabled public search-page candidates. Disabled candidates are present for discovery and manual enabling only after direct parsing is verified.
+The shipped release profile does not seed or support login-backed sources such as LinkedIn or Indeed saved views, subscription sources, local API-token sources, or browser-rendered source discovery.
+
+## Validation
+
+Repo hygiene scan:
+
+```bash
+python tools/check_repo_hygiene.py
+```
+
+Run tests:
+
+```bash
+QT_QPA_PLATFORM=offscreen pytest -q
+```
 
 ## Windows EXE build
 
@@ -101,4 +116,3 @@ Install the desktop launcher and icon for the current user:
 ```
 
 Linux desktop environments show icons through `.desktop` launchers and icon themes. The packaged app still sets its Qt window icon from the bundled app assets.
-

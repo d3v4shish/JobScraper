@@ -88,6 +88,9 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QSpinBox
 QPushButton:focus, QToolButton:focus, QComboBox:focus, QLineEdit:focus, QSpinBox:focus {{
     border: 1px solid {accent};
 }}
+QTableView:focus, QTextBrowser:focus, QPlainTextEdit:focus {{
+    border: 1px solid {accent};
+}}
 QPushButton:disabled, QToolButton:disabled {{
     color: #6e7681;
     border-color: {border};
@@ -131,6 +134,7 @@ QTabBar::tab {{
     border: 1px solid {border};
     padding: 4px 10px;
     min-height: 22px;
+    min-width: 150px;
     margin-right: 2px;
     color: {text_dim};
 }}

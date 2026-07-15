@@ -2604,6 +2604,1068 @@
     ]
   },
   {
+    "company": "Jobicy Remote Jobs API",
+    "ats": "jobicy_api",
+    "url": "https://jobicy.com/api/v2/remote-jobs",
+    "entry_url": "https://jobicy.com/jobs-rss-feed",
+    "enabled": true,
+    "portal": "jobicy",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "jobicy",
+      "remote",
+      "api",
+      "public"
+    ],
+    "notes": "Public Jobicy remote jobs API.",
+    "discovery_notes": "Direct JSON API; no browser session or API key required.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python",
+      "go",
+      "rust"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "The Muse Public Jobs API",
+    "ats": "themuse_api",
+    "url": "https://www.themuse.com/api/public/jobs?page=1",
+    "entry_url": "https://www.themuse.com/search",
+    "enabled": true,
+    "portal": "themuse",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "themuse",
+      "api",
+      "public"
+    ],
+    "notes": "Public The Muse jobs API.",
+    "discovery_notes": "Direct JSON API; no browser session or API key required.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python"
+    ],
+    "locations": [
+      "remote",
+      "United States"
+    ]
+  },
+  {
+    "company": "Working Nomads Public Jobs API",
+    "ats": "workingnomads_api",
+    "url": "https://www.workingnomads.com/api/exposed_jobs/",
+    "entry_url": "https://www.workingnomads.com/jobs",
+    "enabled": true,
+    "portal": "workingnomads",
+    "entry_kind": "public_api",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "workingnomads",
+      "remote",
+      "api",
+      "public"
+    ],
+    "notes": "Public Working Nomads exposed jobs API.",
+    "discovery_notes": "Direct JSON API; no browser session or API key required.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "python",
+      "go",
+      "rust"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "We Work Remotely DevOps",
+    "ats": "weworkremotely_rss",
+    "url": "https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss",
+    "entry_url": "https://weworkremotely.com/categories/remote-devops-sysadmin-jobs",
+    "enabled": true,
+    "portal": "weworkremotely",
+    "entry_kind": "public_rss",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "weworkremotely",
+      "remote",
+      "rss",
+      "devops",
+      "public"
+    ],
+    "notes": "We Work Remotely public DevOps and Sysadmin RSS feed.",
+    "discovery_notes": "RSS feed is public and attribution links are retained.",
+    "search_terms": [
+      "devops",
+      "sre",
+      "platform engineer",
+      "linux"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "We Work Remotely Product",
+    "ats": "weworkremotely_rss",
+    "url": "https://weworkremotely.com/categories/remote-product-jobs.rss",
+    "entry_url": "https://weworkremotely.com/categories/remote-product-jobs",
+    "enabled": true,
+    "portal": "weworkremotely",
+    "entry_kind": "public_rss",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "weworkremotely",
+      "remote",
+      "rss",
+      "product",
+      "public"
+    ],
+    "notes": "We Work Remotely public Product RSS feed.",
+    "discovery_notes": "RSS feed is public and attribution links are retained.",
+    "search_terms": [
+      "product manager",
+      "technical product",
+      "platform"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "We Work Remotely Customer Support",
+    "ats": "weworkremotely_rss",
+    "url": "https://weworkremotely.com/categories/remote-customer-support-jobs.rss",
+    "entry_url": "https://weworkremotely.com/categories/remote-customer-support-jobs",
+    "enabled": true,
+    "portal": "weworkremotely",
+    "entry_kind": "public_rss",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "weworkremotely",
+      "remote",
+      "rss",
+      "support",
+      "public"
+    ],
+    "notes": "We Work Remotely public Customer Support RSS feed.",
+    "discovery_notes": "RSS feed is public and attribution links are retained.",
+    "search_terms": [
+      "support engineer",
+      "technical support",
+      "customer success"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Remote.co Developer Jobs",
+    "ats": "remote_co_search",
+    "url": "https://remote.co/remote-jobs/developer",
+    "entry_url": "https://remote.co/remote-jobs/developer",
+    "enabled": false,
+    "portal": "remote_co",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "remote_co",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public Remote.co developer jobs page.",
+    "discovery_notes": "Disabled until the direct HTML parser is re-verified against the current Remote.co markup.",
+    "search_terms": [
+      "software engineer",
+      "developer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "JustRemote Developer Jobs",
+    "ats": "justremote_search",
+    "url": "https://justremote.co/remote-developer-jobs",
+    "entry_url": "https://justremote.co/remote-developer-jobs",
+    "enabled": false,
+    "portal": "justremote",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "justremote",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public JustRemote developer jobs page.",
+    "discovery_notes": "Disabled until direct detail links normalize reliably without a browser session.",
+    "search_terms": [
+      "software engineer",
+      "developer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "FlexJobs Public Developer Jobs",
+    "ats": "flexjobs_search",
+    "url": "https://www.flexjobs.com/search?search=software+engineer",
+    "entry_url": "https://www.flexjobs.com/search?search=software+engineer",
+    "enabled": false,
+    "portal": "flexjobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "flexjobs",
+      "remote",
+      "public"
+    ],
+    "notes": "Public FlexJobs search page.",
+    "discovery_notes": "Disabled because FlexJobs can gate full detail pages behind its membership flow.",
+    "search_terms": [
+      "software engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Jobs24x Software Jobs",
+    "ats": "jobs24x_search",
+    "url": "https://www.jobs24x.com/jobs/software-engineer",
+    "entry_url": "https://www.jobs24x.com/jobs/software-engineer",
+    "enabled": false,
+    "portal": "jobs24x",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "jobs24x",
+      "remote",
+      "public"
+    ],
+    "notes": "Public Jobs24x search page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "RemoteFront Developer Jobs",
+    "ats": "remotefront_search",
+    "url": "https://remotefront.com/remote-developer-jobs",
+    "entry_url": "https://remotefront.com/remote-developer-jobs",
+    "enabled": false,
+    "portal": "remotefront",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "remotefront",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public RemoteFront jobs page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "developer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Underdog Startup Jobs",
+    "ats": "underdog_search",
+    "url": "https://underdog.io/jobs",
+    "entry_url": "https://underdog.io/jobs",
+    "enabled": false,
+    "portal": "underdog",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "underdog",
+      "startup",
+      "public"
+    ],
+    "notes": "Public Underdog jobs page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Devsnap Developer Jobs",
+    "ats": "devsnap_search",
+    "url": "https://devsnap.io/jobs",
+    "entry_url": "https://devsnap.io/jobs",
+    "enabled": false,
+    "portal": "devsnap",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "devsnap",
+      "developer",
+      "public"
+    ],
+    "notes": "Public Devsnap jobs page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "developer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "YC Work at a Startup",
+    "ats": "yc_work_at_startup",
+    "url": "https://www.ycombinator.com/jobs",
+    "entry_url": "https://www.ycombinator.com/jobs",
+    "enabled": false,
+    "portal": "yc_work_at_startup",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "yc",
+      "startup",
+      "public"
+    ],
+    "notes": "Public Y Combinator startup jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "founding engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Himalayas Remote Developer Jobs",
+    "ats": "himalayas_search",
+    "url": "https://himalayas.app/jobs/software-engineer",
+    "entry_url": "https://himalayas.app/jobs/software-engineer",
+    "enabled": false,
+    "portal": "himalayas",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "himalayas",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public Himalayas software jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Working Nomads Developer Jobs",
+    "ats": "workingnomads_search",
+    "url": "https://www.workingnomads.com/jobs?category=development",
+    "entry_url": "https://www.workingnomads.com/jobs?category=development",
+    "enabled": false,
+    "portal": "workingnomads",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "workingnomads",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public Working Nomads development jobs page.",
+    "discovery_notes": "Disabled in favor of the direct public API source.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "NoDesk Developer Jobs",
+    "ats": "nodesk_search",
+    "url": "https://nodesk.co/remote-jobs/developer/",
+    "entry_url": "https://nodesk.co/remote-jobs/developer/",
+    "enabled": false,
+    "portal": "nodesk",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "nodesk",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public NoDesk developer jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "developer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Jobspresso Remote Work",
+    "ats": "jobspresso_search",
+    "url": "https://jobspresso.co/remote-work/",
+    "entry_url": "https://jobspresso.co/remote-work/",
+    "enabled": false,
+    "portal": "jobspresso",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "jobspresso",
+      "remote",
+      "public"
+    ],
+    "notes": "Public Jobspresso remote jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Remote Rocketship Developer Jobs",
+    "ats": "remote_rocketship_search",
+    "url": "https://www.remoterocketship.com/remote-developer-jobs",
+    "entry_url": "https://www.remoterocketship.com/remote-developer-jobs",
+    "enabled": false,
+    "portal": "remote_rocketship",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "remote_rocketship",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public Remote Rocketship developer jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Arc.dev Remote Developer Jobs",
+    "ats": "arc_dev_search",
+    "url": "https://arc.dev/remote-jobs",
+    "entry_url": "https://arc.dev/remote-jobs",
+    "enabled": false,
+    "portal": "arc_dev",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "arc_dev",
+      "remote",
+      "developer",
+      "public"
+    ],
+    "notes": "Public Arc.dev remote jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Levels.fyi Jobs",
+    "ats": "levels_fyi_jobs",
+    "url": "https://www.levels.fyi/jobs",
+    "entry_url": "https://www.levels.fyi/jobs",
+    "enabled": false,
+    "portal": "levels_fyi",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "levels_fyi",
+      "compensation",
+      "public"
+    ],
+    "notes": "Public Levels.fyi jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote",
+      "United States"
+    ]
+  },
+  {
+    "company": "Built In Tech Jobs",
+    "ats": "builtin_jobs",
+    "url": "https://builtin.com/jobs",
+    "entry_url": "https://builtin.com/jobs",
+    "enabled": false,
+    "portal": "builtin",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "builtin",
+      "tech",
+      "public"
+    ],
+    "notes": "Public Built In jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote",
+      "United States"
+    ]
+  },
+  {
+    "company": "Climatebase Jobs",
+    "ats": "climatebase_jobs",
+    "url": "https://jobs.climatebase.org/jobs",
+    "entry_url": "https://jobs.climatebase.org/jobs",
+    "enabled": false,
+    "portal": "climatebase",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "climatebase",
+      "climate",
+      "public"
+    ],
+    "notes": "Public Climatebase jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "climate"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Naukri Software Jobs",
+    "ats": "naukri_search",
+    "url": "https://www.naukri.com/software-engineer-jobs",
+    "entry_url": "https://www.naukri.com/software-engineer-jobs",
+    "enabled": false,
+    "portal": "naukri",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "naukri",
+      "india",
+      "public"
+    ],
+    "notes": "Public Naukri software jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "India"
+    ]
+  },
+  {
+    "company": "Instahyre Software Jobs",
+    "ats": "instahyre_search",
+    "url": "https://www.instahyre.com/python-jobs/",
+    "entry_url": "https://www.instahyre.com/python-jobs/",
+    "enabled": false,
+    "portal": "instahyre",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "instahyre",
+      "india",
+      "public"
+    ],
+    "notes": "Public Instahyre jobs page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "python",
+      "backend engineer"
+    ],
+    "locations": [
+      "India"
+    ]
+  },
+  {
+    "company": "Cutshort Software Jobs",
+    "ats": "cutshort_search",
+    "url": "https://cutshort.io/jobs/software-development-jobs",
+    "entry_url": "https://cutshort.io/jobs/software-development-jobs",
+    "enabled": false,
+    "portal": "cutshort",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "cutshort",
+      "india",
+      "public"
+    ],
+    "notes": "Public Cutshort software jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "India"
+    ]
+  },
+  {
+    "company": "Hirist Software Jobs",
+    "ats": "hirist_search",
+    "url": "https://www.hirist.tech/c/software-developer-jobs",
+    "entry_url": "https://www.hirist.tech/c/software-developer-jobs",
+    "enabled": false,
+    "portal": "hirist",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "hirist",
+      "india",
+      "public"
+    ],
+    "notes": "Public Hirist software developer jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "India"
+    ]
+  },
+  {
+    "company": "Foundit Software Jobs",
+    "ats": "foundit_search",
+    "url": "https://www.foundit.in/srp/results?query=software%20engineer",
+    "entry_url": "https://www.foundit.in/srp/results?query=software%20engineer",
+    "enabled": false,
+    "portal": "foundit",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "foundit",
+      "india",
+      "public"
+    ],
+    "notes": "Public Foundit software engineer search page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "India"
+    ]
+  },
+  {
+    "company": "TimesJobs Software Jobs",
+    "ats": "timesjobs_search",
+    "url": "https://www.timesjobs.com/candidate/job-search.html?searchType=personalizedSearch&txtKeywords=software+engineer",
+    "entry_url": "https://www.timesjobs.com/candidate/job-search.html?searchType=personalizedSearch&txtKeywords=software+engineer",
+    "enabled": false,
+    "portal": "timesjobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "timesjobs",
+      "india",
+      "public"
+    ],
+    "notes": "Public TimesJobs software engineer search page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "India"
+    ]
+  },
+  {
+    "company": "HiringCafe",
+    "ats": "hiringcafe_search",
+    "url": "https://hiring.cafe/",
+    "entry_url": "https://hiring.cafe/",
+    "enabled": false,
+    "portal": "hiringcafe",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "hiringcafe",
+      "aggregator",
+      "public"
+    ],
+    "notes": "Public HiringCafe search page.",
+    "discovery_notes": "Disabled until live query shaping and SSR payload normalization are re-verified against the current site.",
+    "search_terms": [
+      "software engineer",
+      "python",
+      "data engineer"
+    ],
+    "locations": [
+      "remote",
+      "india"
+    ]
+  },
+  {
+    "company": "EchoJobs",
+    "ats": "echojobs_search",
+    "url": "https://echojobs.io/jobs",
+    "entry_url": "https://echojobs.io/jobs",
+    "enabled": false,
+    "portal": "echojobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "echojobs",
+      "tech",
+      "public"
+    ],
+    "notes": "Public EchoJobs search page.",
+    "discovery_notes": "Disabled because direct HTML currently returns a Cloudflare challenge in headless fetches.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer",
+      "ai engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "AIJobs.net",
+    "ats": "aijobsnet_search",
+    "url": "https://aijobs.net/",
+    "entry_url": "https://aijobs.net/",
+    "enabled": false,
+    "portal": "aijobsnet",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "aijobsnet",
+      "ai",
+      "public"
+    ],
+    "notes": "Public AIJobs.net listing page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is re-verified; export feed work stays deferred.",
+    "search_terms": [
+      "machine learning engineer",
+      "ai engineer",
+      "data scientist"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "AI Jobs",
+    "ats": "ai_jobs_search",
+    "url": "https://www.aijobs.com/",
+    "entry_url": "https://www.aijobs.com/",
+    "enabled": false,
+    "portal": "ai_jobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "ai_jobs",
+      "ai",
+      "public"
+    ],
+    "notes": "Public AIJobs listing page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "machine learning engineer",
+      "ai engineer",
+      "data scientist"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Machine Learning Jobs",
+    "ats": "ml_jobs_search",
+    "url": "https://www.mljobs.com/",
+    "entry_url": "https://www.mljobs.com/",
+    "enabled": false,
+    "portal": "ml_jobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "ml_jobs",
+      "ai",
+      "public"
+    ],
+    "notes": "Public machine learning jobs page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "machine learning engineer",
+      "ai engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "DataJobs",
+    "ats": "data_jobs_search",
+    "url": "https://datajobs.com/",
+    "entry_url": "https://datajobs.com/",
+    "enabled": false,
+    "portal": "data_jobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "data_jobs",
+      "data",
+      "public"
+    ],
+    "notes": "Public DataJobs page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "data engineer",
+      "analytics engineer",
+      "machine learning"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "DataYoshi",
+    "ats": "datayoshi_search",
+    "url": "https://www.datayoshi.com/jobs",
+    "entry_url": "https://www.datayoshi.com/jobs",
+    "enabled": false,
+    "portal": "datayoshi",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "datayoshi",
+      "data",
+      "public"
+    ],
+    "notes": "Public DataYoshi jobs page.",
+    "discovery_notes": "Disabled because direct HTML currently returns a Cloudflare block in headless fetches.",
+    "search_terms": [
+      "data engineer",
+      "machine learning engineer",
+      "analytics engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Rust Jobs",
+    "ats": "rust_jobs_search",
+    "url": "https://rustjobs.dev/",
+    "entry_url": "https://rustjobs.dev/",
+    "enabled": false,
+    "portal": "rust_jobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "rust_jobs",
+      "rust",
+      "public"
+    ],
+    "notes": "Public RustJobs.dev listing page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "rust",
+      "systems engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "GolangProjects Jobs",
+    "ats": "golangprojects_search",
+    "url": "https://www.golangprojects.com/",
+    "entry_url": "https://www.golangprojects.com/",
+    "enabled": false,
+    "portal": "golangprojects",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "golangprojects",
+      "go",
+      "public"
+    ],
+    "notes": "Public GolangProjects jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "go",
+      "golang",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "CyberSecJobs",
+    "ats": "cybersecjobs_search",
+    "url": "https://www.cybersecjobs.com/",
+    "entry_url": "https://www.cybersecjobs.com/",
+    "enabled": false,
+    "portal": "cybersecjobs",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "cybersecjobs",
+      "security",
+      "public"
+    ],
+    "notes": "Public CyberSecJobs listing page candidate.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "security engineer",
+      "application security"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Otta Software Jobs",
+    "ats": "otta_search",
+    "url": "https://app.otta.com/jobs",
+    "entry_url": "https://app.otta.com/jobs",
+    "enabled": false,
+    "portal": "otta",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "otta",
+      "startup",
+      "public"
+    ],
+    "notes": "Public Otta jobs page candidate.",
+    "discovery_notes": "Disabled because Otta often requires an interactive app flow before useful job details are visible.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
+    "company": "Welcome to the Jungle Jobs",
+    "ats": "welcome_to_the_jungle_search",
+    "url": "https://www.welcometothejungle.com/en/jobs",
+    "entry_url": "https://www.welcometothejungle.com/en/jobs",
+    "enabled": false,
+    "portal": "welcome_to_the_jungle",
+    "entry_kind": "public_search",
+    "auth_mode": "public",
+    "tags": [
+      "portal",
+      "welcome_to_the_jungle",
+      "public"
+    ],
+    "notes": "Public Welcome to the Jungle jobs page.",
+    "discovery_notes": "Disabled until live direct HTML normalization is verified.",
+    "search_terms": [
+      "software engineer",
+      "backend engineer"
+    ],
+    "locations": [
+      "remote"
+    ]
+  },
+  {
     "company": "Python.org Jobs",
     "ats": "python_jobs_search",
     "url": "https://www.python.org/jobs/",
@@ -2792,6 +3854,22 @@
       "greenhouse"
     ],
     "notes": "Validated public Greenhouse board for SentinelOne."
+  },
+  {
+    "company": "CrowdStrike",
+    "ats": "workday",
+    "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers",
+    "entry_url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cybersecurity",
+      "endpoint-security",
+      "cloud-security",
+      "workday"
+    ],
+    "notes": "Validated public Workday board for CrowdStrike.",
+    "discovery_notes": "No login required. The normal Workday scraper page size succeeds; oversized candidate probes are avoided."
   },
   {
     "company": "Okta",
@@ -3442,6 +4520,246 @@
     "notes": "Validated public Ashby board from source watchlist probe."
   },
   {
+    "company": "Docker",
+    "ats": "ashby",
+    "token": "docker",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "developer-tools",
+      "infra",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Mozilla",
+    "ats": "greenhouse",
+    "token": "mozilla",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "browser",
+      "systems",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from MissingBoards Batch A."
+  },
+  {
+    "company": "Cohere",
+    "ats": "ashby",
+    "token": "cohere",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Mistral AI",
+    "ats": "lever",
+    "token": "mistral",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "lever"
+    ],
+    "notes": "Validated public Lever board from MissingBoards Batch A."
+  },
+  {
+    "company": "Lambda Labs",
+    "ats": "ashby",
+    "token": "lambda",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "infra",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "DigitalOcean",
+    "ats": "greenhouse",
+    "token": "digitalocean98",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cloud",
+      "systems",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from MissingBoards Batch A."
+  },
+  {
+    "company": "ElevenLabs",
+    "ats": "ashby",
+    "token": "elevenlabs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Runway",
+    "ats": "ashby",
+    "token": "runway",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "xAI",
+    "ats": "greenhouse",
+    "token": "xai",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from MissingBoards Batch A."
+  },
+  {
+    "company": "Harvey",
+    "ats": "ashby",
+    "token": "harvey",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Decagon",
+    "ats": "ashby",
+    "token": "decagon",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "LlamaIndex",
+    "ats": "ashby",
+    "token": "llamaindex",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "developer-tools",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Vapi",
+    "ats": "ashby",
+    "token": "vapi",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "voice",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Physical Intelligence",
+    "ats": "ashby",
+    "token": "physicalintelligence",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "robotics",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Crusoe",
+    "ats": "ashby",
+    "token": "crusoe",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cloud",
+      "infra",
+      "ashby"
+    ],
+    "notes": "Validated public Ashby board from MissingBoards Batch A."
+  },
+  {
+    "company": "Nebius",
+    "ats": "greenhouse",
+    "token": "nebius",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "cloud",
+      "ai",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from MissingBoards Batch A."
+  },
+  {
+    "company": "Figure AI",
+    "ats": "greenhouse",
+    "token": "figureai",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "robotics",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from MissingBoards Batch A."
+  },
+  {
+    "company": "MinIO",
+    "ats": "greenhouse",
+    "token": "minio",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "storage",
+      "systems",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from MissingBoards Batch A."
+  },
+  {
+    "company": "Wayve",
+    "ats": "greenhouse",
+    "token": "wayve",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "ai",
+      "autonomy",
+      "greenhouse"
+    ],
+    "notes": "Validated public Greenhouse board from MissingBoards Batch B; the official careers site currently routes to a First-hosted board backed by the same token."
+  },
+  {
     "company": "Hacker News Who Is Hiring",
     "ats": "hackernews_hiring",
     "token": "who is hiring",
@@ -3459,5 +4777,85 @@
     ],
     "notes": "Uses the repo-local HN topic extractor helpers to pull top-level comments from the most recent Who Is Hiring thread.",
     "discovery_notes": "Algolia story search plus HN item fetch; latest recent thread only."
+  },
+  {
+    "company": "ServiceNow",
+    "ats": "smartrecruiters",
+    "token": "servicenow",
+    "url": "",
+    "tags": [
+      "ai",
+      "big-tech",
+      "systems"
+    ],
+    "enabled": true,
+    "notes": "Promoted from source watchlist probe.",
+    "discovery_notes": "Probe verified 25 importable jobs; report=jobscraper-source-candidate-report.json"
+  },
+  {
+    "company": "Netradyne",
+    "ats": "smartrecruiters",
+    "token": "netradyne",
+    "url": "",
+    "tags": [
+      "ai",
+      "india",
+      "systems"
+    ],
+    "enabled": true,
+    "notes": "Promoted from source watchlist probe.",
+    "discovery_notes": "Probe verified 1 importable jobs; report=jobscraper-source-candidate-report.json"
+  },
+  {
+    "company": "Cerebras",
+    "ats": "ashby",
+    "token": "cerebras",
+    "url": "",
+    "tags": [
+      "ai",
+      "systems"
+    ],
+    "enabled": true,
+    "notes": "Promoted from source watchlist probe.",
+    "discovery_notes": "Probe verified 95 importable jobs; report=jobscraper-source-candidate-report.json"
+  },
+  {
+    "company": "Etched",
+    "ats": "ashby",
+    "token": "etched",
+    "url": "",
+    "tags": [
+      "ai",
+      "systems"
+    ],
+    "enabled": true,
+    "notes": "Promoted from source watchlist probe.",
+    "discovery_notes": "Probe verified 102 importable jobs; report=jobscraper-source-candidate-report.json"
+  },
+  {
+    "company": "Palo Alto Networks",
+    "ats": "paloalto_search",
+    "url": "https://jobs.paloaltonetworks.com/en/search-jobs",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "security",
+      "networking",
+      "public-search"
+    ],
+    "notes": "Validated public Palo Alto Networks search pages with direct no-auth pagination via ?p= page URLs."
+  },
+  {
+    "company": "Two Sigma",
+    "ats": "twosigma_search",
+    "url": "https://careers.twosigma.com/careers/OpenRoles",
+    "enabled": true,
+    "tags": [
+      "validated",
+      "quant",
+      "trading",
+      "public-search"
+    ],
+    "notes": "Validated public Two Sigma OpenRoles pages with no-auth pagination and direct job detail links."
   }
 ]

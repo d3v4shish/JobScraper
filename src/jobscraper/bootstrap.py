@@ -1,4 +1,4 @@
-"""Runtime bootstrap for workspace setup, migration, and logging."""
+"""Runtime bootstrap for workspace setup and logging."""
 
 from __future__ import annotations
 
@@ -7,24 +7,15 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 import sys
-import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from . import paths
 from .storage import fs
 
 
 SETTINGS_VERSION = 1
-MIGRATION_SENTINEL = "legacy_repo_migration_v1"
 _INITIALIZED = False
-
-
-def _copy_file(src: Path, dst: Path) -> None:
-    """Copy one file into place when the destination is absent."""
-    if dst.exists():
-        return
-    fs.copy_file(src, dst)
 
 
 def default_settings_payload() -> Dict[str, Any]:
@@ -36,15 +27,10 @@ def default_settings_payload() -> Dict[str, Any]:
         "db_path": str(paths.default_db_path(workspace_root=workspace_root)),
         "sources_path": str(paths.default_sources_path(workspace_root=workspace_root)),
         "source_watchlist_path": str(paths.default_source_watchlist_path(workspace_root=workspace_root)),
+        "http_concurrency": 32,
         "local_ai_base_url": "",
         "local_ai_model": "",
-        "migration": {
-            "completed": False,
-            "marker": "",
-            "source_root": "",
-            "completed_at": 0,
-            "errors": [],
-        },
+        "first_run_tutorial_dismissed": False,
     }
 
 
@@ -59,10 +45,6 @@ def load_settings() -> Dict[str, Any]:
         return default_settings_payload()
     defaults = default_settings_payload()
     defaults.update({key: value for key, value in payload.items() if key != "migration"})
-    migration = defaults.get("migration", {})
-    if isinstance(payload.get("migration"), dict):
-        migration.update(payload["migration"])
-    defaults["migration"] = migration
     return defaults
 
 
@@ -78,79 +60,6 @@ def update_settings(**updates: Any) -> Dict[str, Any]:
         payload[key] = value
     save_settings(payload)
     return payload
-
-
-def legacy_candidate_roots() -> list[Path]:
-    """Return the filesystem roots that may contain the legacy repo-local workspace."""
-    roots: list[Path] = []
-    cwd = Path.cwd().resolve()
-    roots.append(cwd)
-    package_root = paths.package_root()
-    roots.append(package_root.parent)
-    roots.append(package_root.parent.parent)
-    unique: list[Path] = []
-    seen: set[str] = set()
-    for root in roots:
-        key = str(root).lower()
-        if key in seen:
-            continue
-        seen.add(key)
-        unique.append(root)
-    return unique
-
-
-def find_legacy_root() -> Optional[Path]:
-    """Locate the current repo-root style workspace if it still exists."""
-    for root in legacy_candidate_roots():
-        if (root / "company_jobs.sqlite").exists() or (root / "company_sources.json").exists():
-            return root
-    return None
-
-
-def migrate_legacy_workspace(settings: Dict[str, Any]) -> Dict[str, Any]:
-    """Copy the legacy repo-root runtime artifacts into the Documents workspace."""
-    migration = dict(settings.get("migration") or {})
-    if migration.get("completed") and migration.get("marker") == MIGRATION_SENTINEL:
-        return settings
-
-    legacy_root = find_legacy_root()
-    migration_errors: list[str] = []
-    if legacy_root is None:
-        migration.update(
-            {
-                "completed": True,
-                "marker": MIGRATION_SENTINEL,
-                "source_root": "",
-                "completed_at": int(time.time()),
-                "errors": [],
-            }
-        )
-        settings["migration"] = migration
-        save_settings(settings)
-        return settings
-
-    copy_targets = [
-        (legacy_root / "company_jobs.sqlite", Path(settings["db_path"])),
-        (legacy_root / "company_sources.json", Path(settings["sources_path"])),
-    ]
-    for src, dst in copy_targets:
-        try:
-            if src.exists():
-                _copy_file(src, dst)
-        except Exception as exc:  # pragma: no cover - defensive migration logging
-            migration_errors.append(f"{src.name}: {exc}")
-    migration.update(
-        {
-            "completed": True,
-            "marker": MIGRATION_SENTINEL,
-            "source_root": str(legacy_root),
-            "completed_at": int(time.time()),
-            "errors": migration_errors,
-        }
-    )
-    settings["migration"] = migration
-    save_settings(settings)
-    return settings
 
 
 def ensure_workspace_files(settings: Dict[str, Any]) -> Dict[str, Any]:
@@ -216,8 +125,6 @@ def initialize_runtime() -> Dict[str, Any]:
     if _INITIALIZED:
         return load_settings()
     settings = load_settings()
-    ensure_workspace_files(settings)
-    settings = migrate_legacy_workspace(settings)
     ensure_workspace_files(settings)
     apply_environment_from_settings(settings)
     configure_logging()

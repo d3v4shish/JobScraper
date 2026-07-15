@@ -7,14 +7,66 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt, pyqtSignal
 from PyQt6.QtGui import QColor, QFont
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QWidget, QSizePolicy
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QSizePolicy, QWidget
 
 from ..storage import db
 from .utils import compact_text, format_ts
 
 
+def _source_health_label(row: Dict[str, Any]) -> str:
+    failures = int(row.get("failure_count") or 0)
+    successes = int(row.get("success_count") or 0)
+    last_status = str(row.get("last_status") or "").strip().lower()
+    if last_status in {"error", "manual_review", "blocked_skipped", "parser_issue"}:
+        return "needs review"
+    if successes <= 0 and failures > 0:
+        return "failing"
+    if successes > 0:
+        return "ok"
+    return "new"
+
+
+def _prepare_source_row(row: Dict[str, Any]) -> Dict[str, Any]:
+    item = dict(row)
+    for key in ("open_count", "matching_count", "failure_count", "last_duration_ms", "source_quality_score"):
+        item[f"_display_{key}"] = str(int(item.get(key) or 0))
+    for key in ("company", "ats", "portal", "entry_kind", "source_health_group", "last_status", "last_error"):
+        item[f"_display_{key}"] = compact_text(item.get(key), 120)
+    item["_display_source_health"] = _source_health_label(item)
+    return item
+
+
+def _prepare_company_row(row: Dict[str, Any], *, checked: bool) -> Dict[str, Any]:
+    item = dict(row)
+    item["checked"] = checked
+    item["_display_company"] = str(item.get("company") or "")
+    item["_display_open_count"] = str(int(item.get("open_count") or 0))
+    item["_display_matching_count"] = str(int(item.get("matching_count") or 0))
+    return item
+
+
+def _prepare_jobs_row(row: Dict[str, Any]) -> Dict[str, Any]:
+    item = dict(row)
+    if item.get("row_type") == "group":
+        item["_display_company"] = f"{item.get('company')}  ({int(item.get('count') or 0)})"
+        item["_display_title"] = ""
+        item["_display_location"] = ""
+        item["_display_detected_stack"] = ""
+        item["_display_source_portal"] = ""
+        item["_display_published_at"] = ""
+        return item
+    item["_display_company"] = compact_text(item.get("company"), 120)
+    item["_display_title"] = compact_text(item.get("title"), 120)
+    item["_display_location"] = compact_text(item.get("location"), 120)
+    item["_display_detected_stack"] = compact_text(item.get("detected_stack"), 120)
+    item["_display_source_portal"] = str(item.get("source_portal") or "company_board")
+    item["_display_published_at"] = format_ts(item.get("published_at") or item.get("updated_at") or item.get("last_seen_at"))
+    return item
+
+
 class BusyStrip(QWidget):
     """Compact pane-level busy indicator used throughout the workbench."""
+
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
         self.setObjectName("BusyStrip")
@@ -57,6 +109,7 @@ class BusyStrip(QWidget):
 
 class SourcesTableModel(QAbstractTableModel):
     """Model backing the sources admin table."""
+
     COLUMNS = [
         ("Company", "company"),
         ("ATS", "ats"),
@@ -91,6 +144,12 @@ class SourcesTableModel(QAbstractTableModel):
     def __init__(self) -> None:
         super().__init__()
         self.rows: List[Dict[str, Any]] = []
+        self._mono_font = QFont("JetBrains Mono", 10)
+        self._error_color = QColor("#ff6b6b")
+        self._review_color = QColor("#ff9b71")
+        self._healthy_color = QColor("#8ddb8c")
+        self._disabled_color = QColor("#8b949e")
+        self._new_color = QColor("#f0b35f")
 
     def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:  # noqa: N802
         return 0 if parent.isValid() else len(self.rows)
@@ -104,41 +163,27 @@ class SourcesTableModel(QAbstractTableModel):
         row = self.rows[index.row()]
         _header, key = self.COLUMNS[index.column()]
         if role == Qt.ItemDataRole.DisplayRole:
-            value = row.get(key)
-            if key in {"open_count", "matching_count", "failure_count", "last_duration_ms", "source_quality_score"}:
-                return str(int(value or 0))
-            if key == "source_health":
-                failures = int(row.get("failure_count") or 0)
-                successes = int(row.get("success_count") or 0)
-                if str(row.get("last_status") or "").strip().lower() in {"error", "manual_review", "blocked_skipped", "parser_issue"}:
-                    return "needs review"
-                if successes <= 0 and failures > 0:
-                    return "failing"
-                if successes > 0:
-                    return "ok"
-                return "new"
-            return compact_text(value, 120)
+            return row.get(f"_display_{key}", "")
         if role == Qt.ItemDataRole.FontRole:
-            font = QFont("JetBrains Mono", 10)
-            return font
+            return self._mono_font
         if role == Qt.ItemDataRole.ForegroundRole and key == "last_error" and row.get("last_error"):
-            return QColor("#ff6b6b")
+            return self._error_color
         if role == Qt.ItemDataRole.ForegroundRole and key == "source_health_group":
             group = str(row.get("source_health_group") or "")
             if group == "healthy":
-                return QColor("#8ddb8c")
+                return self._healthy_color
             if group in {"blocked", "parser failure"}:
-                return QColor("#ff9b71")
+                return self._review_color
             if group == "disabled":
-                return QColor("#8b949e")
-            return QColor("#f0b35f")
+                return self._disabled_color
+            return self._new_color
         if role == Qt.ItemDataRole.ForegroundRole and key == "source_health":
-            health = str(self.data(index, Qt.ItemDataRole.DisplayRole) or "")
+            health = str(row.get("_display_source_health") or "")
             if health == "ok":
-                return QColor("#8ddb8c")
+                return self._healthy_color
             if health in {"failing", "needs review"}:
-                return QColor("#ff9b71")
-            return QColor("#f0b35f")
+                return self._review_color
+            return self._new_color
         return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:  # noqa: N802
@@ -151,11 +196,13 @@ class SourcesTableModel(QAbstractTableModel):
 
     def set_rows(self, rows: Sequence[Dict[str, Any]]) -> None:
         self.beginResetModel()
-        self.rows = [dict(row) for row in rows]
+        self.rows = [_prepare_source_row(row) for row in rows]
         self.endResetModel()
+
 
 class CompanyFilterModel(QAbstractTableModel):
     """Checkable model backing the company filter sidebar."""
+
     checksChanged = pyqtSignal()
     COLUMNS = [("", "checked"), ("Company", "company"), ("Open", "open_count"), ("Matching", "matching_count")]
     HEADER_TOOLTIPS = {
@@ -168,6 +215,7 @@ class CompanyFilterModel(QAbstractTableModel):
     def __init__(self) -> None:
         super().__init__()
         self.rows: List[Dict[str, Any]] = []
+        self._mono_font = QFont("JetBrains Mono", 10)
 
     def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:  # noqa: N802
         return 0 if parent.isValid() else len(self.rows)
@@ -185,12 +233,9 @@ class CompanyFilterModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.DisplayRole:
             if index.column() == 0:
                 return ""
-            value = row.get(key)
-            if key in {"open_count", "matching_count"}:
-                return str(int(value or 0))
-            return str(value or "")
+            return row.get(f"_display_{key}", "")
         if role == Qt.ItemDataRole.FontRole:
-            return QFont("JetBrains Mono", 10)
+            return self._mono_font
         return None
 
     def setData(self, index: QModelIndex, value: Any, role: int = Qt.ItemDataRole.EditRole) -> bool:  # noqa: N802
@@ -224,9 +269,9 @@ class CompanyFilterModel(QAbstractTableModel):
         self.beginResetModel()
         self.rows = []
         for row in rows:
-            item = dict(row)
-            item["checked"] = not preserve_set or item.get("company") in preserve_set
-            self.rows.append(item)
+            company = str(row.get("company") or "")
+            checked = not preserve_set or company in preserve_set
+            self.rows.append(_prepare_company_row(row, checked=checked))
         self.endResetModel()
 
     def checked_companies(self) -> List[str]:
@@ -272,8 +317,10 @@ class CompanyFilterModel(QAbstractTableModel):
         self.dataChanged.emit(left, right, [Qt.ItemDataRole.CheckStateRole, Qt.ItemDataRole.DisplayRole])
         self.checksChanged.emit()
 
+
 class JobsTableModel(QAbstractTableModel):
     """Dense jobs table model with optional grouped company header rows."""
+
     COLUMNS = [
         ("Company", "company"),
         ("Title", "title"),
@@ -297,6 +344,11 @@ class JobsTableModel(QAbstractTableModel):
         self._row_signature: tuple[tuple[Any, ...], ...] = ()
         self._row_by_job_id: Dict[int, int] = {}
         self._visible_job_ids: List[int] = []
+        self._mono_font = QFont("JetBrains Mono", 10)
+        self._group_font = QFont("Inter", 10)
+        self._group_font.setBold(True)
+        self._group_background = QColor("#161b22")
+        self._group_foreground = QColor("#f0f6fc")
 
     def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:  # noqa: N802
         return 0 if parent.isValid() else len(self.rows)
@@ -309,28 +361,17 @@ class JobsTableModel(QAbstractTableModel):
             return None
         row = self.rows[index.row()]
         row_type = row.get("row_type", "job")
-        header, key = self.COLUMNS[index.column()]
+        _header, key = self.COLUMNS[index.column()]
         if role == Qt.ItemDataRole.DisplayRole:
-            if row_type == "group":
-                if index.column() == 0:
-                    return f"{row.get('company')}  ({int(row.get('count') or 0)})"
-                return ""
-            value = row.get(key)
-            if key == "published_at":
-                return format_ts(value or row.get("updated_at") or row.get("last_seen_at"))
-            if key == "source_portal":
-                return str(value or "company_board")
-            return compact_text(value, 120)
+            return row.get(f"_display_{key}", "")
         if role == Qt.ItemDataRole.FontRole:
             if row_type == "group":
-                font = QFont("Inter", 10)
-                font.setBold(True)
-                return font
-            return QFont("JetBrains Mono", 10)
+                return self._group_font
+            return self._mono_font
         if role == Qt.ItemDataRole.BackgroundRole and row_type == "group":
-            return QColor("#161b22")
+            return self._group_background
         if role == Qt.ItemDataRole.ForegroundRole and row_type == "group":
-            return QColor("#f0f6fc")
+            return self._group_foreground
         if role == Qt.ItemDataRole.TextAlignmentRole and key == "published_at":
             return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         return None
@@ -368,10 +409,9 @@ class JobsTableModel(QAbstractTableModel):
                 rows.append(item)
         self.set_rows(rows)
 
-    def set_rows(self, rows: Sequence[Dict[str, Any]]) -> None:
-        """Replace the prepared jobs-table rows without rebuilding them on the UI thread."""
-        new_rows = [dict(row) for row in rows]
-        signature = tuple(
+    @staticmethod
+    def row_signature(rows: Sequence[Dict[str, Any]]) -> tuple[Any, ...]:
+        return tuple(
             (
                 row.get("row_type", "job"),
                 row.get("id"),
@@ -384,13 +424,18 @@ class JobsTableModel(QAbstractTableModel):
                 row.get("status"),
                 row.get("count"),
             )
-            for row in new_rows
+            for row in rows
         )
-        if signature == self._row_signature:
-            return
+
+    def set_rows(self, rows: Sequence[Dict[str, Any]], signature: Optional[Sequence[Any]] = None) -> bool:
+        """Replace the prepared jobs-table rows without rebuilding them on the UI thread."""
+        row_signature = tuple(signature) if signature is not None else self.row_signature(rows)
+        if row_signature == self._row_signature:
+            return False
+        new_rows = [_prepare_jobs_row(row) for row in rows]
         self.beginResetModel()
         self.rows = new_rows
-        self._row_signature = signature
+        self._row_signature = row_signature
         self._row_by_job_id = {}
         self._visible_job_ids = []
         for index, row in enumerate(self.rows):
@@ -404,6 +449,7 @@ class JobsTableModel(QAbstractTableModel):
                 self._row_by_job_id[job_id] = index
                 self._visible_job_ids.append(job_id)
         self.endResetModel()
+        return True
 
     def job_id_at(self, row_index: int) -> Optional[int]:
         if not (0 <= row_index < len(self.rows)):
@@ -427,4 +473,3 @@ class JobsTableModel(QAbstractTableModel):
         if row_index >= 0:
             return dict(self.rows[row_index])
         return None
-

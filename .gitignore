@@ -4,9 +4,13 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+.coverage*
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.codex/
+.agents/
+.DS_Store
 
 build-linux/
 dist-linux/
@@ -21,4 +25,8 @@ build/source_import_smoke.sqlite
 *.log
 *.tmp
 *.swp
+*.bak
 src/*.egg-info/
+
+.portal_sessions/
+browser_debug/

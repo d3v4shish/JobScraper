@@ -45,6 +45,11 @@ DEFAULT_INTEREST_TERMS = [
     "Rust",
     "C++",
     "Go",
+    "Java",
+    "AI",
+    "RAG",
+    "AI Engineer",
+    "Forward Deployed Engineer",
     "Linux",
     "Kernel",
     "Networking",
@@ -75,11 +80,35 @@ _JSON_LD_RE = re.compile(
     r"<script[^>]*type=[\"']application/ld\+json[\"'][^>]*>(.*?)</script>",
     re.IGNORECASE | re.DOTALL,
 )
+_NEXT_DATA_RE = re.compile(
+    r"<script[^>]*id=[\"']__NEXT_DATA__[\"'][^>]*>(.*?)</script>",
+    re.IGNORECASE | re.DOTALL,
+)
 _GOOGLE_LINK_RE = re.compile(r'href="([^"]*jobs/results/[^"]+)"', re.IGNORECASE)
 _WELLFOUND_LINK_RE = re.compile(r'href="([^"]*(?:wellfound\.com)?/jobs/[^"?#]+(?:/)?[^"#]*)"', re.IGNORECASE)
 _HREF_RE = re.compile(r'href=["\']([^"\']+)["\']', re.IGNORECASE)
 _DICE_LINK_RE = re.compile(r"/job-detail/[0-9a-f-]{24,}", re.IGNORECASE)
 _JOB_ID_PATH_RE = re.compile(r"/job[s]?/(\d+|[0-9a-f-]{24,})(?:/|$)", re.IGNORECASE)
+_AIJOBS_LIST_ITEM_RE = re.compile(
+    r"<li[^>]*class=[\"'][^\"']*position-relative[^\"']*pb-2[^\"']*mb-1[^\"']*[\"'][^>]*>(.*?)</li>",
+    re.IGNORECASE | re.DOTALL,
+)
+_AIJOBS_LINK_RE = re.compile(
+    r"<a[^>]*class=[\"'][^\"']*stretched-link[^\"']*[\"'][^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
+    re.IGNORECASE | re.DOTALL,
+)
+_AIJOBS_REMOTE_BADGE_RE = re.compile(
+    r"<span[^>]*class=[\"'][^\"']*text-bg-success[^\"']*[\"'][^>]*>\s*R\s*</span>",
+    re.IGNORECASE | re.DOTALL,
+)
+_PALOALTO_LIST_ITEM_RE = re.compile(
+    r"<li[^>]*class=[\"'][^\"']*section29__search-results-li[^\"']*[\"'][^>]*>(.*?)</li>",
+    re.IGNORECASE | re.DOTALL,
+)
+_TWOSIGMA_RESULT_RE = re.compile(
+    r"<article[^>]*class=[\"'][^\"']*article--result[^\"']*[\"'][^>]*>(.*?)</article>",
+    re.IGNORECASE | re.DOTALL,
+)
 _OPTIVER_LINK_RE = re.compile(
     r"https://optiver\.com/working-at-optiver/career-opportunities/(\d+)/",
     re.IGNORECASE,
@@ -117,6 +146,7 @@ class ScrapeOptions:
     enable_remote: bool = True
     enable_india_office_hybrid: bool = True
     concurrency: int = 6
+    http_concurrency: int = 32
     hackernews_parser_engine: str = "auto"
     only_source_ids: List[int] = field(default_factory=list)
     only_companies: List[str] = field(default_factory=list)
@@ -133,6 +163,7 @@ class ScrapeResult:
     closed: int = 0
     error: str = ""
     skipped: bool = False
+    max_http_in_flight: int = 0
 
 
 @dataclass
@@ -421,6 +452,22 @@ def contains_term(text: str, term: str) -> bool:
     return _term_re(term).search(text) is not None
 
 
+def contains_term_lowered(lower_text: str, term: str) -> bool:
+    """Boundary-aware term search for already-lowercased taxonomy scans."""
+    key = term.lower().strip()
+    if not key:
+        return False
+    start = lower_text.find(key)
+    while start >= 0:
+        end = start + len(key)
+        before_ok = start == 0 or not lower_text[start - 1].isalnum()
+        after_ok = end >= len(lower_text) or not lower_text[end].isalnum()
+        if before_ok and after_ok:
+            return True
+        start = lower_text.find(key, start + 1)
+    return False
+
+
 def contains_all(text: str, words: List[str]) -> bool:
     return all(contains_term(text, word) for word in words)
 
@@ -478,12 +525,40 @@ FOUNDING_ENGINEER_TERMS = [
     "founding software engineer",
     "founding backend engineer",
     "founding full stack engineer",
+    "founding team",
     "early engineer",
     "engineer #1",
     "engineer no. 1",
     "engineer number one",
     "first engineer",
+    "founder",
+    "co-founder",
+    "cofounder",
+    "foundation engineer",
+    "foundational engineer",
     "technical co-founder",
+]
+
+AI_ENGINEER_TERMS = [
+    "ai engineer",
+    "ai ml engineer",
+    "ai/ml engineer",
+    "applied ai engineer",
+    "artificial intelligence engineer",
+    "foundation model engineer",
+    "genai engineer",
+    "generative ai engineer",
+    "llm engineer",
+    "machine learning engineer",
+    "ml engineer",
+    "rag engineer",
+]
+
+FORWARD_DEPLOYED_ENGINEER_TERMS = [
+    "forward deployed engineer",
+    "forward deployed software engineer",
+    "forward-deployed engineer",
+    "forward-deployed software engineer",
 ]
 
 
@@ -590,6 +665,7 @@ def filter_and_match(
         meta["matched_builtin_groups"] = ["founding_engineer"]
 
     detected = detect_stack(t)
+    meta["_detected_stack"] = detected
     all_tags = detected.get("stack", [])
     interests = selected_interest_tags(all_tags, options.interest_terms, t)
     meta["interest_tags"] = interests
@@ -642,6 +718,23 @@ TECH_TAXONOMY: Dict[str, Dict[str, List[str]]] = {
         "Rails": ["rails", "ruby on rails"],
     },
     "domains": {
+        "AI": [
+            "ai",
+            "ai ml",
+            "ai/ml",
+            "artificial intelligence",
+            "foundation model",
+            "foundation models",
+            "gen ai",
+            "genai",
+            "generative ai",
+            "large language model",
+            "large language models",
+            "llm",
+            "llms",
+            "machine learning",
+            "ml",
+        ],
         "Backend": ["backend", "back end", "server-side", "server side"],
         "Distributed Systems": ["distributed systems", "distributed system"],
         "Infrastructure": ["infrastructure", "infra"],
@@ -649,10 +742,24 @@ TECH_TAXONOMY: Dict[str, Dict[str, List[str]]] = {
         "Linux": ["linux"],
         "Networking": ["networking", "tcp/ip", "bgp", "dns", "vpn", "wireguard", "firewall", "proxy"],
         "Platform": ["platform engineering", "platform engineer", "platform team"],
-        "Systems": ["systems engineer", "systems engineering", "system software", "systems software"],
+        "Systems": [
+            "low level systems",
+            "low-level systems",
+            "system engineer",
+            "system level",
+            "system software",
+            "system-level",
+            "systems engineer",
+            "systems engineering",
+            "systems programmer",
+            "systems programming",
+            "systems software",
+        ],
     },
     "groups": {
+        "AI Engineer": AI_ENGINEER_TERMS,
         "Founding Engineer": FOUNDING_ENGINEER_TERMS,
+        "Forward Deployed Engineer": FORWARD_DEPLOYED_ENGINEER_TERMS,
     },
     "tools": {
         "AWS": ["aws", "amazon web services"],
@@ -670,6 +777,7 @@ TECH_TAXONOMY: Dict[str, Dict[str, List[str]]] = {
         "MySQL": ["mysql"],
         "Postgres": ["postgres", "postgresql"],
         "Proxy": ["proxy"],
+        "RAG": ["rag", "retrieval augmented generation", "retrieval-augmented generation"],
         "Redis": ["redis"],
         "TCP/IP": ["tcp/ip", "tcp ip"],
         "Terraform": ["terraform"],
@@ -681,12 +789,13 @@ TECH_TAXONOMY: Dict[str, Dict[str, List[str]]] = {
 
 def detect_stack(text: str) -> Dict[str, List[str]]:
     found: Dict[str, List[str]] = {"languages": [], "frameworks": [], "domains": [], "groups": [], "tools": []}
+    lower_text = str(text or "").lower()
     for category, entries in TECH_TAXONOMY.items():
         for name, aliases in entries.items():
             if name == "Go":
                 matched = contains_go_interest(text)
             else:
-                matched = any(contains_term(text, alias) for alias in aliases)
+                matched = any(contains_term_lowered(lower_text, alias) for alias in aliases)
             if matched:
                 found[category].append(name)
     for category in found:
@@ -734,6 +843,31 @@ def _should_retry_http_error(exc: Exception) -> bool:
     return True
 
 
+def attach_http_tracker(session: aiohttp.ClientSession, tracker: Dict[str, int]) -> None:
+    """Attach lightweight in-flight request instrumentation to one session."""
+    setattr(session, "_jobscraper_http_tracker", tracker)
+
+
+def _http_tracker(session: aiohttp.ClientSession) -> Optional[Dict[str, int]]:
+    tracker = getattr(session, "_jobscraper_http_tracker", None)
+    return tracker if isinstance(tracker, dict) else None
+
+
+def _http_request_started(session: aiohttp.ClientSession) -> None:
+    tracker = _http_tracker(session)
+    if tracker is None:
+        return
+    tracker["current"] = int(tracker.get("current") or 0) + 1
+    tracker["max"] = max(int(tracker.get("max") or 0), int(tracker["current"]))
+
+
+def _http_request_finished(session: aiohttp.ClientSession) -> None:
+    tracker = _http_tracker(session)
+    if tracker is None:
+        return
+    tracker["current"] = max(0, int(tracker.get("current") or 0) - 1)
+
+
 async def fetch_json(
     session: aiohttp.ClientSession,
     url: str,
@@ -752,8 +886,12 @@ async def fetch_json(
                 params=params,
                 timeout=aiohttp.ClientTimeout(total=timeout_s),
             ) as resp:
-                resp.raise_for_status()
-                return await resp.json(content_type=None)
+                _http_request_started(session)
+                try:
+                    resp.raise_for_status()
+                    return await resp.json(content_type=None)
+                finally:
+                    _http_request_finished(session)
         except Exception as exc:
             last_error = exc
             if attempt < retries and _should_retry_http_error(exc):
@@ -779,8 +917,12 @@ async def post_json(
                 headers=headers,
                 timeout=aiohttp.ClientTimeout(total=timeout_s),
             ) as resp:
-                resp.raise_for_status()
-                return await resp.json(content_type=None)
+                _http_request_started(session)
+                try:
+                    resp.raise_for_status()
+                    return await resp.json(content_type=None)
+                finally:
+                    _http_request_finished(session)
         except Exception as exc:
             last_error = exc
             if attempt < retries and _should_retry_http_error(exc):
@@ -799,8 +941,12 @@ async def fetch_text(
     for attempt in range(1, retries + 1):
         try:
             async with session.get(url, timeout=aiohttp.ClientTimeout(total=timeout_s)) as resp:
-                resp.raise_for_status()
-                return await resp.text()
+                _http_request_started(session)
+                try:
+                    resp.raise_for_status()
+                    return await resp.text()
+                finally:
+                    _http_request_finished(session)
         except Exception as exc:
             last_error = exc
             if attempt < retries and _should_retry_http_error(exc):
@@ -2201,14 +2347,14 @@ def parse_hackernews_comment_header(comment_text: str, apply_url: str) -> Dict[s
     }
 
 
-async def fetch_hackernews_hiring(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Fetch the latest HN Who Is Hiring thread and normalize top-level comments as jobs.
-
-    This adapter intentionally reuses the repo-local `hn_topic_extractor.py`
-    search and item helpers instead of introducing a second HN fetch path.
-    """
+async def stream_hackernews_hiring(
+    session: aiohttp.ClientSession,
+    source: Dict[str, Any],
+    progress: Optional[ProgressCallback] = None,
+) -> AsyncIterator[JobBatch]:
+    """Stream the latest HN Who Is Hiring thread as normalized top-level job batches."""
     topic = str(source.get("token") or "who is hiring").strip() or "who is hiring"
-    since_epoch = int(datetime.now(tz=timezone.utc).timestamp()) - (120 * 24 * 60 * 60)
+    since_epoch = int(datetime.now(tz=timezone.utc).timestamp()) - (365 * 24 * 60 * 60)
     hits = await hn_topic.search_stories(
         session,
         topic=topic,
@@ -2241,14 +2387,16 @@ async def fetch_hackernews_hiring(session: aiohttp.ClientSession, source: Dict[s
     if latest_story is None or story_item is None:
         raise SourceStatusError("manual_review", f"No recent Hacker News hiring thread with comments matched topic={topic!r}.")
     if not comment_ids:
-        return []
+        return
     parser_engine = resolve_hackernews_parser_engine(str(source.get("_hn_parser_engine") or "auto"))
-
-    semaphore = asyncio.Semaphore(64)
+    emit(
+        progress,
+        f"Hacker News {source.get('company') or 'Who Is Hiring'}: story={latest_story.id}, top_level_comments={len(comment_ids)}",
+    )
+    chunk_size = 80
 
     async def fetch_comment(comment_id: int) -> Optional[Dict[str, Any]]:
-        async with semaphore:
-            item = await hn_topic.fetch_item(session, comment_id)
+        item = await hn_topic.fetch_item(session, comment_id)
         if not item or item.get("type") != "comment":
             return None
         if item.get("dead") or item.get("deleted"):
@@ -2261,17 +2409,13 @@ async def fetch_hackernews_hiring(session: aiohttp.ClientSession, source: Dict[s
         comment_url = f"https://news.ycombinator.com/item?id={comment_id}"
         external_url = first_url_in_text(text)
         apply_url = external_url or comment_url
-        if not hackernews_comment_looks_like_job(text, apply_url):
-            return None
         parsed = parse_hackernews_comment_header(text, apply_url)
-        parsed, parser_meta, keep = await maybe_upgrade_hackernews_parse(
+        parsed, parser_meta, _keep = await maybe_upgrade_hackernews_parse(
             text,
             apply_url,
             parsed,
             engine=parser_engine,
         )
-        if not keep:
-            return None
         raw = {
             "story_id": latest_story.id,
             "story_title": latest_story.title,
@@ -2307,13 +2451,36 @@ async def fetch_hackernews_hiring(session: aiohttp.ClientSession, source: Dict[s
         job["company"] = parsed["company"] or source["company"]
         return job
 
-    gathered = await asyncio.gather(*(fetch_comment(comment_id) for comment_id in comment_ids), return_exceptions=True)
-    out: List[Dict[str, Any]] = []
-    for item in gathered:
-        if isinstance(item, dict):
-            out.append(item)
-    if not out:
+    kept_total = 0
+    emitted_any = False
+    for offset in range(0, len(comment_ids), chunk_size):
+        chunk_ids = comment_ids[offset : offset + chunk_size]
+        gathered = await asyncio.gather(*(fetch_comment(comment_id) for comment_id in chunk_ids), return_exceptions=True)
+        batch: List[Dict[str, Any]] = []
+        for item in gathered:
+            if isinstance(item, dict):
+                batch.append(item)
+        kept_total += len(batch)
+        emit(
+            progress,
+            (
+                f"Hacker News {source.get('company') or 'Who Is Hiring'}: "
+                f"comments_processed={min(offset + len(chunk_ids), len(comment_ids))}/{len(comment_ids)}, "
+                f"kept={kept_total}"
+            ),
+        )
+        if batch:
+            emitted_any = True
+            yield batch
+    if not emitted_any:
         raise SourceStatusError("blocked_skipped", f"Hacker News story {latest_story.id} rendered no usable hiring comments.")
+
+
+async def fetch_hackernews_hiring(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Fetch the latest HN Who Is Hiring thread and normalize top-level comments as jobs."""
+    out: JobBatch = []
+    async for batch in stream_hackernews_hiring(session, source, None):
+        out.extend(batch)
     return out
 
 
@@ -2418,6 +2585,89 @@ async def fetch_remotive_api(session: aiohttp.ClientSession, source: Dict[str, A
             raw=item,
         )
         out.append(set_job_company(job, first_present(item.get("company_name"))))
+    return out
+
+
+async def fetch_jobicy_api(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    payload = await fetch_json(session, source_url_required(source, "Jobicy"))
+    items = payload.get("jobs") if isinstance(payload, dict) else []
+    out: List[Dict[str, Any]] = []
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        job_url = first_present(item.get("url"), item.get("jobUrl"), item.get("applyUrl"))
+        job = normalize_base(
+            source,
+            source_job_id=first_present(item.get("id"), item.get("jobSlug"), item.get("slug"), job_url),
+            title=first_present(item.get("jobTitle"), item.get("title")),
+            location=first_present(item.get("jobGeo"), item.get("location"), "Remote"),
+            department=first_present(item.get("jobIndustry"), item.get("jobLevel"), item.get("tags")),
+            employment_type=first_present(item.get("jobType"), item.get("type")),
+            job_url=job_url,
+            apply_url=first_present(item.get("applyUrl"), job_url),
+            published_at=first_present(item.get("pubDate"), item.get("publishedAt"), item.get("date")) or None,
+            updated_at=None,
+            text=combine_text(item.get("jobDescription"), item.get("description"), item.get("jobExcerpt"), item.get("tags")),
+            raw=item,
+        )
+        out.append(set_job_company(job, first_present(item.get("companyName"), item.get("company"))))
+    return out
+
+
+async def fetch_themuse_api(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    payload = await fetch_json(session, source_url_required(source, "The Muse"))
+    items = payload.get("results") if isinstance(payload, dict) else []
+    out: List[Dict[str, Any]] = []
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        refs = item.get("refs") if isinstance(item.get("refs"), dict) else {}
+        company = item.get("company") if isinstance(item.get("company"), dict) else {}
+        levels = item.get("levels") if isinstance(item.get("levels"), list) else []
+        categories = item.get("categories") if isinstance(item.get("categories"), list) else []
+        locations = item.get("locations") if isinstance(item.get("locations"), list) else []
+        job_url = first_present(refs.get("landing_page"), item.get("url"))
+        job = normalize_base(
+            source,
+            source_job_id=first_present(item.get("id"), job_url),
+            title=first_present(item.get("name"), item.get("title")),
+            location=first_present(locations, "Remote"),
+            department=first_present(categories),
+            employment_type=first_present(levels, item.get("type")),
+            job_url=job_url,
+            apply_url=first_present(refs.get("landing_page"), refs.get("apply"), job_url),
+            published_at=first_present(item.get("publication_date"), item.get("published_at")) or None,
+            updated_at=None,
+            text=combine_text(item.get("contents"), categories, levels),
+            raw=item,
+        )
+        out.append(set_job_company(job, first_present(company.get("name"), item.get("company"))))
+    return out
+
+
+async def fetch_workingnomads_api(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    payload = await fetch_json(session, source_url_required(source, "Working Nomads"))
+    items = payload if isinstance(payload, list) else payload.get("jobs") if isinstance(payload, dict) else []
+    out: List[Dict[str, Any]] = []
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        job_url = first_present(item.get("url"), item.get("job_url"), item.get("apply_url"))
+        job = normalize_base(
+            source,
+            source_job_id=first_present(item.get("id"), item.get("slug"), job_url),
+            title=first_present(item.get("title"), item.get("position")),
+            location=first_present(item.get("location"), item.get("locations"), "Remote"),
+            department=first_present(item.get("category"), item.get("tags")),
+            employment_type=first_present(item.get("job_type"), item.get("type")),
+            job_url=job_url,
+            apply_url=first_present(item.get("apply_url"), item.get("application_url"), job_url),
+            published_at=first_present(item.get("pub_date"), item.get("publication_date"), item.get("created_at")) or None,
+            updated_at=first_present(item.get("updated_at")) or None,
+            text=combine_text(item.get("description"), item.get("company"), item.get("tags")),
+            raw=item,
+        )
+        out.append(set_job_company(job, first_present(item.get("company_name"), item.get("company"))))
     return out
 
 
@@ -2604,6 +2854,320 @@ def jobs_from_browser_render(source: Dict[str, Any], render: BrowserRenderResult
         seen.add(key)
         deduped.append(job)
     return deduped
+
+
+def hiringcafe_payload_from_html(html_text: str) -> Dict[str, Any]:
+    match = _NEXT_DATA_RE.search(html_text or "")
+    if not match:
+        return {}
+    try:
+        payload = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def hiringcafe_compensation_text(processed: Dict[str, Any]) -> str:
+    currency = first_present(processed.get("listed_compensation_currency"))
+    for band, label in (
+        ("yearly", "year"),
+        ("monthly", "month"),
+        ("weekly", "week"),
+        ("daily", "day"),
+        ("hourly", "hour"),
+        ("bi-weekly", "2 weeks"),
+    ):
+        minimum = first_present(processed.get(f"{band}_min_compensation"))
+        maximum = first_present(processed.get(f"{band}_max_compensation"))
+        if not minimum and not maximum:
+            continue
+        amount = minimum
+        if minimum and maximum and maximum != minimum:
+            amount = f"{minimum}-{maximum}"
+        elif maximum and not minimum:
+            amount = maximum
+        return compact_ws(f"{currency} {amount} per {label}")
+    minimum = first_present(processed.get("min_salary_usd"))
+    maximum = first_present(processed.get("max_salary_usd"))
+    if not minimum and not maximum:
+        return ""
+    amount = minimum
+    if minimum and maximum and maximum != minimum:
+        amount = f"{minimum}-{maximum}"
+    elif maximum and not minimum:
+        amount = maximum
+    return compact_ws(f"USD {amount}")
+
+
+def normalize_hiringcafe_job(source: Dict[str, Any], item: Dict[str, Any]) -> Dict[str, Any]:
+    info = item.get("job_information") if isinstance(item.get("job_information"), dict) else {}
+    processed = item.get("v5_processed_job_data") if isinstance(item.get("v5_processed_job_data"), dict) else {}
+    company = item.get("enriched_company_data") if isinstance(item.get("enriched_company_data"), dict) else {}
+    compensation = hiringcafe_compensation_text(processed)
+    job = normalize_base(
+        source,
+        source_job_id=first_present(item.get("id"), item.get("objectID"), item.get("source_and_board_token"), item.get("apply_url")),
+        title=first_present(info.get("title"), processed.get("core_job_title")),
+        location=first_present(
+            processed.get("formatted_workplace_location"),
+            "Remote" if processed.get("is_workplace_worldwide_ok") else "",
+        ),
+        department=first_present(processed.get("job_category"), item.get("source")),
+        employment_type=first_present(processed.get("commitment"), processed.get("role_type")),
+        job_url=first_present(item.get("apply_url")),
+        apply_url=first_present(item.get("apply_url")),
+        published_at=first_present(processed.get("estimated_publish_date")) or iso_from_ms(processed.get("estimated_publish_date_millis")),
+        updated_at=None,
+        text=combine_text(
+            processed.get("requirements_summary"),
+            processed.get("role_activities"),
+            processed.get("technical_tools"),
+            processed.get("language_requirements"),
+            processed.get("company_sector_and_industry"),
+            processed.get("seniority_level"),
+            compensation,
+        ),
+        raw=item,
+    )
+    return set_job_company(job, first_present(processed.get("company_name"), company.get("name")))
+
+
+def hiringcafe_jobs_from_html(source: Dict[str, Any], html_text: str) -> List[Dict[str, Any]]:
+    payload = hiringcafe_payload_from_html(html_text)
+    page_props = ((payload.get("props") or {}).get("pageProps") or {})
+    hits = page_props.get("ssrHits")
+    if not isinstance(hits, list):
+        return []
+    jobs: List[Dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in hits:
+        if not isinstance(item, dict):
+            continue
+        job = normalize_hiringcafe_job(source, item)
+        key = str(job.get("source_job_id") or "")
+        if not key or not job.get("title") or key in seen:
+            continue
+        seen.add(key)
+        jobs.append(job)
+    return jobs
+
+
+def normalize_aijobsnet_list_item(source: Dict[str, Any], item_html: str, *, source_url: str) -> Optional[Dict[str, Any]]:
+    link_match = _AIJOBS_LINK_RE.search(item_html or "")
+    if not link_match:
+        return None
+    anchor_body = re.sub(r"<span[^>]*>.*?</span>", "", link_match.group(2), flags=re.IGNORECASE | re.DOTALL)
+    title = compact_ws(strip_html(anchor_body))
+    job_url = urljoin(source_url, unescape(link_match.group(1)))
+    job_id_match = re.search(r"-(\d+)(?:/|$)", job_url)
+    skills = ", ".join(
+        filter(None, (compact_ws(strip_html(part)) for part in re.findall(r"<span>(.*?)</span>", item_html, re.IGNORECASE | re.DOTALL)))
+    )
+    perks = ", ".join(
+        filter(
+            None,
+            (
+                compact_ws(strip_html(part))
+                for part in re.findall(
+                    r"<span[^>]*class=[\"'][^\"']*text-success[^\"']*[\"'][^>]*>(.*?)</span>",
+                    item_html,
+                    re.IGNORECASE | re.DOTALL,
+                )
+            ),
+        )
+    )
+    salary = ""
+    for part in re.findall(
+        r"<span[^>]*class=[\"'][^\"']*text-bg-success[^\"']*[\"'][^>]*>(.*?)</span>",
+        item_html,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        value = compact_ws(strip_html(part))
+        if value and value != "R":
+            salary = value
+            break
+    seniority = portal_html_field(
+        item_html,
+        r"<span[^>]*class=[\"'][^\"']*text-bg-warning[^\"']*[\"'][^>]*>(.*?)</span>",
+    )
+    employment_type = portal_html_field(
+        item_html,
+        r"<span[^>]*class=[\"'][^\"']*text-bg-secondary[^\"']*[\"'][^>]*>(.*?)</span>",
+    )
+    age = portal_html_field(item_html, r"<div[^>]*class=[\"'][^\"']*text-muted[^\"']*[\"'][^>]*>(.*?)</div>")
+    location = ""
+    location_match = re.search(
+        r"<span[^>]*class=[\"'][^\"']*text-bg-secondary[^\"']*[\"'][^>]*>.*?</span>\s*</div>\s*<div>\s*(.*?)\s*</div>\s*<div[^>]*class=[\"'][^\"']*text-muted[^\"']*[\"']",
+        item_html,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if location_match:
+        location_html = _AIJOBS_REMOTE_BADGE_RE.sub("", location_match.group(1))
+        location = compact_ws(strip_html(location_html))
+    return normalize_base(
+        source,
+        source_job_id=job_id_match.group(1) if job_id_match else job_url,
+        title=title,
+        location=location,
+        department=skills,
+        employment_type=employment_type,
+        job_url=job_url,
+        apply_url=job_url,
+        published_at=None,
+        updated_at=None,
+        text=combine_text(skills, perks, salary, seniority, age),
+        raw={"source": "aijobsnet list", "url": job_url, "age": age, "salary": salary},
+    )
+
+
+def aijobsnet_jobs_from_html(source: Dict[str, Any], html_text: str) -> List[Dict[str, Any]]:
+    source_url = source_url_required(source, "AIJobs.net")
+    jobs: List[Dict[str, Any]] = []
+    seen: set[str] = set()
+    for match in _AIJOBS_LIST_ITEM_RE.finditer(html_text or ""):
+        job = normalize_aijobsnet_list_item(source, match.group(1), source_url=source_url)
+        if not isinstance(job, dict):
+            continue
+        key = str(job.get("source_job_id") or "")
+        if not key or not job.get("title") or key in seen:
+            continue
+        seen.add(key)
+        jobs.append(job)
+    return jobs
+
+
+def paloalto_total_pages_from_html(html_text: str) -> int:
+    total_pages_match = re.search(r'data-total-pages="(\d+)"', html_text or "", re.IGNORECASE)
+    if total_pages_match:
+        return max(1, int(total_pages_match.group(1)))
+    total_match = re.search(r'data-total-results="(\d+)"', html_text or "", re.IGNORECASE)
+    page_size_match = re.search(r'data-records-per-page="(\d+)"', html_text or "", re.IGNORECASE)
+    if total_match and page_size_match:
+        total = int(total_match.group(1))
+        page_size = max(1, int(page_size_match.group(1)))
+        return max(1, (total + page_size - 1) // page_size)
+    return 1
+
+
+def paloalto_page_url(source_url: str, page_num: int) -> str:
+    if page_num <= 1:
+        return source_url
+    parsed = urlparse(source_url)
+    query = parse_qs(parsed.query, keep_blank_values=True)
+    query["p"] = [str(page_num)]
+    return parsed._replace(query=urlencode(query, doseq=True)).geturl()
+
+
+def normalize_paloalto_list_item(source: Dict[str, Any], item_html: str, *, source_url: str) -> Optional[Dict[str, Any]]:
+    link_match = re.search(
+        r"<a[^>]*class=[\"'][^\"']*section29__search-results-link[^\"']*[\"'][^>]*href=[\"']([^\"']+)[\"'][^>]*data-job-id=[\"']([^\"']+)[\"']",
+        item_html or "",
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not link_match:
+        return None
+    job_url = urljoin(source_url, unescape(link_match.group(1)))
+    title = portal_html_field(item_html, r"<h2[^>]*section29__search-results-job-title[^>]*>(.*?)</h2>")
+    if not title:
+        return None
+    return normalize_base(
+        source,
+        source_job_id=link_match.group(2),
+        title=title,
+        location=portal_html_field(item_html, r"<span[^>]*section29__result-location[^>]*>(.*?)</span>"),
+        department=portal_html_field(item_html, r"<span[^>]*section29__result-category[^>]*>(.*?)</span>"),
+        employment_type="",
+        job_url=job_url,
+        apply_url=job_url,
+        published_at=None,
+        updated_at=None,
+        text="",
+        raw={"source": "paloalto list", "url": job_url},
+    )
+
+
+def paloalto_jobs_from_html(source: Dict[str, Any], html_text: str) -> List[Dict[str, Any]]:
+    source_url = source_url_required(source, "Palo Alto Networks")
+    jobs: List[Dict[str, Any]] = []
+    seen: set[str] = set()
+    for match in _PALOALTO_LIST_ITEM_RE.finditer(html_text or ""):
+        job = normalize_paloalto_list_item(source, match.group(1), source_url=source_url)
+        if not isinstance(job, dict):
+            continue
+        key = str(job.get("source_job_id") or "")
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        jobs.append(job)
+    return jobs
+
+
+def normalize_twosigma_result_item(source: Dict[str, Any], item_html: str, *, source_url: str) -> Optional[Dict[str, Any]]:
+    link_match = re.search(
+        r"<a[^>]*class=[\"'][^\"']*link[^\"']*[\"'][^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
+        item_html or "",
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not link_match:
+        return None
+    job_url = urljoin(source_url, unescape(link_match.group(1)))
+    job_id_match = re.search(r"/(\d+)(?:/)?$", job_url)
+    title = compact_ws(strip_html(link_match.group(2)))
+    if not title:
+        return None
+    location = portal_html_field(
+        item_html,
+        r'<div[^>]*article__header__content__text[^>]*>\s*<span[^>]*>(.*?)</span>',
+    )
+    subtext_block = extract_html_block_after_marker(
+        item_html,
+        'article__header__content__sub-text',
+        end_markers=["</div>", '<div class="article__footer">'],
+    )
+    subtext = ", ".join(
+        filter(None, (compact_ws(strip_html(part)) for part in re.findall(r"<span[^>]*>(.*?)</span>", subtext_block, re.IGNORECASE | re.DOTALL)))
+    )
+    return normalize_base(
+        source,
+        source_job_id=job_id_match.group(1) if job_id_match else job_url,
+        title=title,
+        location=location,
+        department=subtext,
+        employment_type="",
+        job_url=job_url,
+        apply_url=job_url,
+        published_at=None,
+        updated_at=None,
+        text="",
+        raw={"source": "twosigma results", "url": job_url},
+    )
+
+
+def twosigma_jobs_from_html(source: Dict[str, Any], html_text: str) -> List[Dict[str, Any]]:
+    source_url = source_url_required(source, "Two Sigma")
+    jobs: List[Dict[str, Any]] = []
+    seen: set[str] = set()
+    for match in _TWOSIGMA_RESULT_RE.finditer(html_text or ""):
+        job = normalize_twosigma_result_item(source, match.group(1), source_url=source_url)
+        if not isinstance(job, dict):
+            continue
+        key = str(job.get("source_job_id") or "")
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        jobs.append(job)
+    return jobs
+
+
+def twosigma_next_page_url(source_url: str, html_text: str) -> str:
+    match = re.search(
+        r"<a[^>]*class=[\"'][^\"']*paginationNextLink[^\"']*[\"'][^>]*href=[\"']([^\"']+)[\"']",
+        html_text or "",
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not match:
+        return ""
+    return urljoin(source_url, unescape(match.group(1)))
 
 
 def public_board_link_allowed(portal: str, entry_url: str, candidate_url: str) -> bool:
@@ -2843,6 +3407,73 @@ async def fetch_public_board_search(
     raise SourceStatusError("blocked_skipped", f"{portal} pages rendered, but no jobs were normalized.")
 
 
+async def fetch_hiringcafe_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    url = source_url_required(source, "HiringCafe")
+    html_text = await fetch_text(session, url, retries=1)
+    jobs = hiringcafe_jobs_from_html(source, html_text)
+    if jobs:
+        return jobs
+    raise SourceStatusError("blocked_skipped", f"HiringCafe page at {url} returned no SSR jobs.")
+
+
+async def fetch_paloalto_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    source_url = source_url_required(source, "Palo Alto Networks")
+    first_html = await fetch_text(session, source_url, retries=1)
+    jobs = paloalto_jobs_from_html(source, first_html)
+    total_pages = min(120, paloalto_total_pages_from_html(first_html))
+    if total_pages > 1:
+        limit = asyncio.Semaphore(5)
+
+        async def fetch_page(page_num: int) -> List[Dict[str, Any]]:
+            async with limit:
+                html_text = await fetch_text(session, paloalto_page_url(source_url, page_num), retries=1)
+            return paloalto_jobs_from_html(source, html_text)
+
+        gathered = await asyncio.gather(*(fetch_page(page_num) for page_num in range(2, total_pages + 1)), return_exceptions=True)
+        seen = {str(job.get("source_job_id") or "") for job in jobs}
+        for result in gathered:
+            if not isinstance(result, list):
+                continue
+            for job in result:
+                key = str(job.get("source_job_id") or "")
+                if not key or key in seen:
+                    continue
+                seen.add(key)
+                jobs.append(job)
+    if jobs:
+        return jobs
+    raise SourceStatusError("blocked_skipped", f"Palo Alto Networks page at {source_url} returned no list jobs.")
+
+
+async def fetch_twosigma_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    next_url = source_url_required(source, "Two Sigma")
+    seen_pages: set[str] = set()
+    seen_jobs: set[str] = set()
+    jobs: List[Dict[str, Any]] = []
+    while next_url and next_url not in seen_pages and len(seen_pages) < 200:
+        seen_pages.add(next_url)
+        html_text = await fetch_text(session, next_url, retries=1)
+        for job in twosigma_jobs_from_html(source, html_text):
+            key = str(job.get("source_job_id") or "")
+            if not key or key in seen_jobs:
+                continue
+            seen_jobs.add(key)
+            jobs.append(job)
+        next_url = twosigma_next_page_url(next_url, html_text)
+    if jobs:
+        return jobs
+    raise SourceStatusError("blocked_skipped", f"Two Sigma OpenRoles page at {source_url} returned no list jobs.")
+
+
+async def fetch_aijobsnet_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    url = source_url_required(source, "AIJobs.net")
+    html_text = await fetch_text(session, url, retries=1)
+    jobs = aijobsnet_jobs_from_html(source, html_text)
+    if jobs:
+        return jobs
+    raise SourceStatusError("blocked_skipped", f"AIJobs.net page at {url} returned no list jobs.")
+
+
 async def fetch_dice_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
     return await fetch_public_board_search(session, source, portal="dice")
 
@@ -2872,6 +3503,14 @@ async def fetch_remotefront_search(session: aiohttp.ClientSession, source: Dict[
 
 
 async def fetch_underdog_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return await fetch_public_board_search(session, source, portal="generic")
+
+
+async def fetch_echojobs_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return await fetch_public_board_search(session, source, portal="generic")
+
+
+async def fetch_datayoshi_search(session: aiohttp.ClientSession, source: Dict[str, Any]) -> List[Dict[str, Any]]:
     return await fetch_public_board_search(session, source, portal="generic")
 
 
@@ -3552,9 +4191,14 @@ ADAPTERS: Dict[str, JobAdapter] = {
     "hackernews_hiring": fetch_hackernews_hiring,
     "remoteok_api": fetch_remoteok_api,
     "remotive_api": fetch_remotive_api,
+    "jobicy_api": fetch_jobicy_api,
+    "themuse_api": fetch_themuse_api,
+    "workingnomads_api": fetch_workingnomads_api,
     "weworkremotely_rss": fetch_weworkremotely_rss,
     "powertofly_search": fetch_powertofly_search,
     "authenticjobs_wp": fetch_authenticjobs_wp,
+    "paloalto_search": fetch_paloalto_search,
+    "twosigma_search": fetch_twosigma_search,
     "dice_search": fetch_dice_search,
     "remote_co_search": fetch_remote_co_search,
     "justremote_search": fetch_justremote_search,
@@ -3597,6 +4241,10 @@ ADAPTERS: Dict[str, JobAdapter] = {
     "hirist_search": fetch_generic_public_board_search,
     "foundit_search": fetch_generic_public_board_search,
     "timesjobs_search": fetch_generic_public_board_search,
+    "hiringcafe_search": fetch_hiringcafe_search,
+    "echojobs_search": fetch_echojobs_search,
+    "aijobsnet_search": fetch_aijobsnet_search,
+    "datayoshi_search": fetch_datayoshi_search,
     "ai_jobs_search": fetch_generic_public_board_search,
     "ml_jobs_search": fetch_generic_public_board_search,
     "data_jobs_search": fetch_generic_public_board_search,
@@ -3609,6 +4257,7 @@ ADAPTERS: Dict[str, JobAdapter] = {
 }
 
 STREAMING_ADAPTERS: Dict[str, StreamingJobAdapter] = {
+    "hackernews_hiring": stream_hackernews_hiring,
     "workday": stream_workday,
 }
 
@@ -3630,6 +4279,9 @@ def persist_jobs_batch(
     *,
     seen_at: int,
 ) -> None:
+    prepared_rows: List[tuple[Dict[str, Any], Dict[str, Any], Dict[str, List[str]]]] = []
+    prepared_seen_keys: List[str] = []
+    matching = 0
     for job in jobs:
         if not job.get("source_job_id") or not job.get("title"):
             continue
@@ -3639,12 +4291,15 @@ def persist_jobs_batch(
             opts,
             location=str(job.get("location") or ""),
         )
-        stack = detect_stack(full_text)
-        db.upsert_job(conn, source, job, match, stack, seen_at=seen_at)
-        seen_keys.append(str(job["job_key"]))
-        result.saved += 1
+        stack = match.pop("_detected_stack", None) or detect_stack(full_text)
+        prepared_rows.append((job, match, stack))
+        prepared_seen_keys.append(str(job["job_key"]))
         if match.get("passes_filter"):
-            result.matching += 1
+            matching += 1
+    db.upsert_jobs_batch(conn, source, prepared_rows, seen_at=seen_at)
+    seen_keys.extend(prepared_seen_keys)
+    result.saved += len(prepared_rows)
+    result.matching += matching
 
 
 async def scrape_all_async(
@@ -3689,10 +4344,14 @@ async def scrape_all_async(
 
     headers = {"User-Agent": USER_AGENT}
     semaphore = asyncio.Semaphore(max(1, opts.concurrency))
+    http_concurrency = max(1, int(opts.http_concurrency or opts.concurrency or 1))
+    http_tracker = {"current": 0, "max": 0}
     db_lock = asyncio.Lock()
     results: List[ScrapeResult] = []
 
-    async with aiohttp.ClientSession(headers=headers) as session:
+    connector = aiohttp.TCPConnector(limit=http_concurrency, limit_per_host=http_concurrency)
+    async with aiohttp.ClientSession(headers=headers, connector=connector) as session:
+        attach_http_tracker(session, http_tracker)
         with db.connect(db_path) as conn:
             db.migrate_connection(conn)
 
@@ -3895,6 +4554,7 @@ async def scrape_all_async(
             tasks = [asyncio.create_task(process_source(source)) for source in sources]
             for task in asyncio.as_completed(tasks):
                 result = await task
+                result.max_http_in_flight = int(http_tracker.get("max") or 0)
                 results.append(result)
                 if should_stop and should_stop():
                     emit(progress, "Stop requested; waiting for in-flight source fetches to finish.")
@@ -3910,6 +4570,8 @@ async def scrape_all_async(
             f"fetched={sum(result.fetched for result in results)} "
             f"saved_seen={sum(result.saved for result in results)} "
             f"closed={sum(result.closed for result in results)}"
+            f" max_http_in_flight={int(http_tracker.get('max') or 0)}"
+            f" http_concurrency={http_concurrency}"
         ),
     )
     return results
@@ -4187,7 +4849,7 @@ async def _probe_candidate_direct(
         payload = await post_json(
             session,
             workday_jobs_url(source),
-            {"appliedFacets": {}, "limit": 25, "offset": 0, "searchText": ""},
+            {"appliedFacets": {}, "limit": 20, "offset": 0, "searchText": ""},
             timeout_s=10,
             retries=1,
         )
@@ -4214,6 +4876,7 @@ async def write_candidate_discovery_report_async(
     candidates_path: Path | str,
     out_path: Path | str,
     limit: int = 0,
+    concurrency: int = 8,
 ) -> List[Dict[str, Any]]:
     payload = json.loads(Path(candidates_path).read_text(encoding="utf-8-sig"))
     if not isinstance(payload, list):
@@ -4221,7 +4884,68 @@ async def write_candidate_discovery_report_async(
     candidates = [item for item in payload if isinstance(item, dict)]
     if limit > 0:
         candidates = candidates[:limit]
-    report: List[Dict[str, Any]] = []
+    probe_semaphore = asyncio.Semaphore(max(1, int(concurrency or 1)))
+    work: List[Awaitable[Dict[str, Any]]] = []
+
+    async def static_row(row: Dict[str, Any]) -> Dict[str, Any]:
+        return row
+
+    async def probe_row(
+        session: aiohttp.ClientSession,
+        *,
+        company: str,
+        surface: str,
+        source: Dict[str, Any],
+        direct_probe: bool,
+        adapter: Optional[JobAdapter],
+    ) -> Dict[str, Any]:
+        async with probe_semaphore:
+            try:
+                if direct_probe:
+                    jobs = await _probe_candidate_direct(session, source)
+                elif adapter is not None:
+                    jobs = await adapter(session, source)
+                else:
+                    raise ValueError(f"No candidate probe for {surface}")
+                importable = _jobs_are_importable(jobs)
+                suggested = dict(source)
+                suggested["enabled"] = bool(importable)
+                return {
+                    "company": company,
+                    "ats": surface,
+                    "token": source.get("token") or "",
+                    "url": source.get("url") or "",
+                    "status": "valid" if importable else "empty_or_incomplete",
+                    "job_count": len(jobs),
+                    "confidence": "high" if importable else "empty",
+                    "sample_titles": [job.get("title", "") for job in jobs[:5]],
+                    "suggested_source": suggested if importable else {**suggested, "enabled": False},
+                }
+            except SourceStatusError as exc:
+                return {
+                    "company": company,
+                    "ats": surface,
+                    "token": source.get("token") or "",
+                    "url": source.get("url") or "",
+                    "status": exc.status,
+                    "job_count": 0,
+                    "confidence": "blocked",
+                    "error": str(exc),
+                    "suggested_source": {**source, "enabled": False},
+                }
+            except Exception as exc:
+                return {
+                    "company": company,
+                    "ats": surface,
+                    "token": source.get("token") or "",
+                    "url": source.get("url") or "",
+                    "status": "error",
+                    "job_count": 0,
+                    "confidence": "failed",
+                    "error": str(exc),
+                    "suggested_source": {**source, "enabled": False},
+                }
+
     async with aiohttp.ClientSession(headers={"User-Agent": USER_AGENT}) as session:
         for candidate in candidates:
             company = str(candidate.get("company") or "").strip()
@@ -4233,82 +4957,48 @@ async def write_candidate_discovery_report_async(
                 adapter = ADAPTERS.get(surface)
                 if not adapter and not direct_probe:
                     for probe in probes:
-                        report.append(
-                            {
-                                "company": company,
-                                "ats": surface,
-                                "token": probe.get("token") or "",
-                                "url": probe.get("url") or "",
-                                "status": "unsupported_probe",
-                                "job_count": 0,
-                                "confidence": "unsupported",
-                            }
+                        work.append(
+                            static_row(
+                                {
+                                    "company": company,
+                                    "ats": surface,
+                                    "token": probe.get("token") or "",
+                                    "url": probe.get("url") or "",
+                                    "status": "unsupported_probe",
+                                    "job_count": 0,
+                                    "confidence": "unsupported",
+                                }
+                            )
                         )
                     continue
                 for probe in probes:
                     source = _candidate_source(company, surface, probe, tags)
                     if surface in {"workday", "icims", "jobvite", "workable", "teamtailor", "bamboohr"} and not source.get("url"):
-                        report.append(
-                            {
-                                "company": company,
-                                "ats": surface,
-                                "token": source.get("token") or "",
-                                "url": "",
-                                "status": "needs_url",
-                                "job_count": 0,
-                                "confidence": "unsupported",
-                            }
+                        work.append(
+                            static_row(
+                                {
+                                    "company": company,
+                                    "ats": surface,
+                                    "token": source.get("token") or "",
+                                    "url": "",
+                                    "status": "needs_url",
+                                    "job_count": 0,
+                                    "confidence": "unsupported",
+                                }
+                            )
                         )
                         continue
-                    try:
-                        if direct_probe:
-                            jobs = await _probe_candidate_direct(session, source)
-                        else:
-                            jobs = await adapter(session, source)
-                        importable = _jobs_are_importable(jobs)
-                        suggested = dict(source)
-                        suggested["enabled"] = bool(importable)
-                        report.append(
-                            {
-                                "company": company,
-                                "ats": surface,
-                                "token": source.get("token") or "",
-                                "url": source.get("url") or "",
-                                "status": "valid" if importable else "empty_or_incomplete",
-                                "job_count": len(jobs),
-                                "confidence": "high" if importable else "empty",
-                                "sample_titles": [job.get("title", "") for job in jobs[:5]],
-                                "suggested_source": suggested if importable else {**suggested, "enabled": False},
-                            }
+                    work.append(
+                        probe_row(
+                            session,
+                            company=company,
+                            surface=surface,
+                            source=source,
+                            direct_probe=direct_probe,
+                            adapter=adapter,
                         )
-                    except SourceStatusError as exc:
-                        report.append(
-                            {
-                                "company": company,
-                                "ats": surface,
-                                "token": source.get("token") or "",
-                                "url": source.get("url") or "",
-                                "status": exc.status,
-                                "job_count": 0,
-                                "confidence": "blocked",
-                                "error": str(exc),
-                                "suggested_source": {**source, "enabled": False},
-                            }
-                        )
-                    except Exception as exc:
-                        report.append(
-                            {
-                                "company": company,
-                                "ats": surface,
-                                "token": source.get("token") or "",
-                                "url": source.get("url") or "",
-                                "status": "error",
-                                "job_count": 0,
-                                "confidence": "failed",
-                                "error": str(exc),
-                                "suggested_source": {**source, "enabled": False},
-                            }
-                        )
+                    )
+        report = list(await asyncio.gather(*work)) if work else []
     fs.atomic_write_json(out_path, report)
     return report
 
@@ -4318,12 +5008,14 @@ def write_candidate_discovery_report(
     candidates_path: Path | str,
     out_path: Path | str,
     limit: int = 0,
+    concurrency: int = 8,
 ) -> List[Dict[str, Any]]:
     return asyncio.run(
         write_candidate_discovery_report_async(
             candidates_path=candidates_path,
             out_path=out_path,
             limit=limit,
+            concurrency=concurrency,
         )
     )
 
@@ -4331,6 +5023,7 @@ def write_candidate_discovery_report(
 _PLACEHOLDER_TITLE_PATTERNS = (
     "test job",
     "test-job",
+    "test hiring",
     "demo job",
     "sn - demo",
     "ceo of kitten mittens",
@@ -4338,6 +5031,7 @@ _PLACEHOLDER_TITLE_PATTERNS = (
     "fdef",
     "fdfd",
 )
+_PLACEHOLDER_EXACT_TITLES = {"test"}
 
 
 def _source_identity_from_row(row: Dict[str, Any]) -> tuple[str, str, str, str]:
@@ -4365,7 +5059,13 @@ def _candidate_report_row_is_promotable(row: Dict[str, Any]) -> bool:
     if int(row.get("job_count") or 0) <= 0:
         return False
     titles = [str(title or "").strip().lower() for title in row.get("sample_titles") or []]
-    if titles and all(any(pattern in title for pattern in _PLACEHOLDER_TITLE_PATTERNS) for title in titles):
+    def placeholder_title(title: str) -> bool:
+        return title in _PLACEHOLDER_EXACT_TITLES or any(pattern in title for pattern in _PLACEHOLDER_TITLE_PATTERNS)
+
+    if titles and all(placeholder_title(title) for title in titles):
+        return False
+    placeholder_count = sum(1 for title in titles if placeholder_title(title))
+    if placeholder_count and (int(row.get("job_count") or 0) <= 3 or placeholder_count > 1):
         return False
     if str(suggested.get("ats") or "").strip().lower() == "smartrecruiters":
         joined_titles = " | ".join(titles)
@@ -4380,12 +5080,14 @@ def probe_and_promote_watchlist(
     sources_path: Path | str,
     report_path: Path | str,
     limit: int = 0,
+    concurrency: int = 8,
 ) -> Dict[str, Any]:
     """Probe candidate direct-source rows and append only verified public sources."""
     report = write_candidate_discovery_report(
         candidates_path=candidates_path,
         out_path=report_path,
         limit=limit,
+        concurrency=concurrency,
     )
     path = Path(sources_path)
     existing_payload = json.loads(path.read_text(encoding="utf-8-sig")) if path.exists() else []
@@ -4462,6 +5164,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--include-words", default="")
     parser.add_argument("--include-mode", choices=["any", "all"], default="any")
     parser.add_argument("--concurrency", type=int, default=6)
+    parser.add_argument("--http-concurrency", type=int, default=32)
     parser.add_argument("--source-id", action="append", type=int, default=[], help="Scrape only the specified source id; repeatable.")
     parser.add_argument("--company", action="append", default=[], help="Scrape only sources matching this company name; repeatable.")
     parser.add_argument("--debug", action="store_true")
@@ -4491,6 +5194,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=0,
         help="Limit the number of candidate companies checked by --discover-candidates.",
+    )
+    parser.add_argument(
+        "--discover-candidates-concurrency",
+        type=int,
+        default=8,
+        help="Maximum concurrent public ATS probes for --discover-candidates.",
     )
     return parser.parse_args()
 
@@ -4523,6 +5232,7 @@ def main() -> None:
             candidates_path=args.discover_candidates,
             out_path=args.discover_candidates_out,
             limit=max(0, args.discover_candidates_limit),
+            concurrency=max(1, args.discover_candidates_concurrency),
         )
         valid = sum(1 for row in report if row.get("status") == "valid")
         print(f"Wrote {len(report)} candidate probe rows to {args.discover_candidates_out}; valid={valid}.")
@@ -4539,6 +5249,7 @@ def main() -> None:
             enable_remote=args.remote,
             enable_india_office_hybrid=args.india_office_hybrid,
             concurrency=max(1, args.concurrency),
+            http_concurrency=max(1, args.http_concurrency),
             only_source_ids=list(args.source_id or []),
             only_companies=list(args.company or []),
         )

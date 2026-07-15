@@ -29,9 +29,55 @@ class ScrapeWorker(QThread):
         self.sources_path = sources_path
         self.options = options
         self._stop_requested = False
+        self._last_progress_emit_at = 0.0
+        self._pending_progress_line = ""
+        self._transient_progress_interval_s = 0.2
 
     def request_stop(self) -> None:
         self._stop_requested = True
+
+    @staticmethod
+    def _is_significant_progress(line: str) -> bool:
+        text = str(line or "").strip()
+        if not text:
+            return False
+        if text.startswith(
+            (
+                "Scraping ",
+                "Done ",
+                "ERROR ",
+                "SCRAPE_SUMMARY ",
+                "Imported ",
+                "No enabled sources found.",
+                "Stop requested",
+            )
+        ):
+            return True
+        status_word = text.split(" ", 1)[0]
+        return status_word.isupper() and "_" in status_word
+
+    def _emit_progress_line(self, line: str) -> None:
+        self.log.emit(line)
+        self._last_progress_emit_at = perf_counter()
+
+    def _flush_pending_progress(self) -> None:
+        text = str(self._pending_progress_line or "").strip()
+        if not text:
+            return
+        self._pending_progress_line = ""
+        self._emit_progress_line(text)
+
+    def _handle_progress(self, line: str) -> None:
+        text = str(line or "").strip()
+        if not text:
+            return
+        if self._is_significant_progress(text):
+            self._flush_pending_progress()
+            self._emit_progress_line(text)
+            return
+        self._pending_progress_line = text
+        if (perf_counter() - self._last_progress_emit_at) >= self._transient_progress_interval_s:
+            self._flush_pending_progress()
 
     def run(self) -> None:
         started = perf_counter()
@@ -41,12 +87,14 @@ class ScrapeWorker(QThread):
                 db_path=self.db_path,
                 sources_path=self.sources_path,
                 options=self.options,
-                progress=self.log.emit,
+                progress=self._handle_progress,
                 should_stop=lambda: self._stop_requested,
             )
+            self._flush_pending_progress()
             LOG.info("worker_finish name=scrape duration_ms=%.1f", (perf_counter() - started) * 1000.0)
             self.done.emit()
         except Exception:
+            self._flush_pending_progress()
             self.failed.emit(traceback.format_exc())
 
 

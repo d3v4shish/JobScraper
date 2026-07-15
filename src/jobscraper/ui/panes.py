@@ -71,7 +71,7 @@ class CommandBar(QWidget):
 
 
 class SettingsPanel(QWidget):
-    """Compact two-row settings drawer for paths, matching profile, and Local AI."""
+    """Compact settings drawer for paths, matching profile, and AI settings."""
 
     def __init__(
         self,
@@ -80,6 +80,7 @@ class SettingsPanel(QWidget):
         sources_path: str,
         watchlist_path: str,
         log_path: str,
+        reports_path: str,
         local_ai_config: Dict[str, Any],
         parent: QWidget | None = None,
     ) -> None:
@@ -96,6 +97,8 @@ class SettingsPanel(QWidget):
         self.watchlist_path_edit = QLineEdit(watchlist_path, self)
         self.log_path_edit = QLineEdit(log_path, self)
         self.log_path_edit.setReadOnly(True)
+        self.reports_path_edit = QLineEdit(reports_path, self)
+        self.reports_path_edit.setReadOnly(True)
         self.remote_checkbox = QCheckBox("Remote", self)
         self.remote_checkbox.setChecked(True)
         self.india_checkbox = QCheckBox("India office/hybrid", self)
@@ -106,6 +109,10 @@ class SettingsPanel(QWidget):
         self.concurrency_spin.setRange(1, 64)
         self.concurrency_spin.setValue(6)
         self.concurrency_spin.setMaximumWidth(88)
+        self.http_concurrency_spin = QSpinBox(self)
+        self.http_concurrency_spin.setRange(1, 128)
+        self.http_concurrency_spin.setValue(32)
+        self.http_concurrency_spin.setMaximumWidth(88)
         self.hn_parser_combo = QComboBox(self)
         self.hn_parser_combo.addItem("Auto", "auto")
         self.hn_parser_combo.addItem("Local AI", "local_ai")
@@ -118,6 +125,11 @@ class SettingsPanel(QWidget):
         self.local_ai_url_edit.setPlaceholderText("http://127.0.0.1:11434")
         self.local_ai_url_edit.setMinimumWidth(260)
         self.local_ai_model_edit.setMinimumWidth(150)
+        self.ai_status_label = QLabel("Checking AI availability...", self)
+        self.ai_status_label.setObjectName("PaneMeta")
+        self.ai_status_label.setMinimumWidth(0)
+        self.ai_status_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        self.ai_status_button = QPushButton("Check AI", self)
 
         grid.setColumnStretch(1, 7)
         grid.setColumnStretch(3, 7)
@@ -158,10 +170,17 @@ class SettingsPanel(QWidget):
 
         grid.addWidget(QLabel("Concurrency", self), 2, 0)
         grid.addWidget(self.concurrency_spin, 2, 1)
-        grid.addWidget(QLabel("HN Parse", self), 2, 2)
-        grid.addWidget(self.hn_parser_combo, 2, 3)
+        grid.addWidget(QLabel("HTTP Cap", self), 2, 2)
+        grid.addWidget(self.http_concurrency_spin, 2, 3)
+        grid.addWidget(QLabel("HN Parse", self), 2, 4)
+        grid.addWidget(self.hn_parser_combo, 2, 5)
+        grid.addWidget(QLabel("AI Status", self), 2, 6)
+        grid.addWidget(self.ai_status_label, 2, 7, 1, 4)
+        grid.addWidget(self.ai_status_button, 2, 11)
         grid.addWidget(QLabel("Watchlist", self), 3, 0)
-        grid.addWidget(self.watchlist_path_edit, 3, 1, 1, 11)
+        grid.addWidget(self.watchlist_path_edit, 3, 1, 1, 5)
+        grid.addWidget(QLabel("Reports", self), 3, 6)
+        grid.addWidget(self.reports_path_edit, 3, 7, 1, 5)
 
 
 class CompaniesPane(QGroupBox):
@@ -228,6 +247,10 @@ class JobsPane(QGroupBox):
         self.hn_review_combo.setEnabled(False)
         self.search_edit = QLineEdit(self)
         self.search_edit.setPlaceholderText("Search title, company, location, description")
+        self.filter_preset_combo = QComboBox(self)
+        self.filter_preset_combo.addItem("Filter presets", "")
+        self.save_filter_preset_button = QPushButton("Save", self)
+        self.delete_filter_preset_button = QPushButton("Delete", self)
         filters_grid.addWidget(self.matching_only_checkbox, 0, 0)
         filters_grid.addWidget(self.open_only_checkbox, 0, 1)
         filters_grid.addWidget(self.group_by_company_checkbox, 0, 2)
@@ -243,7 +266,17 @@ class JobsPane(QGroupBox):
         filters_grid.addWidget(QLabel("Tag", self), 1, 5)
         filters_grid.addWidget(self.source_tag_combo, 1, 6)
         filters_grid.addWidget(QLabel("Search", self), 2, 0)
-        filters_grid.addWidget(self.search_edit, 2, 1, 1, 7)
+        filters_grid.addWidget(self.search_edit, 2, 1, 1, 4)
+        filters_grid.addWidget(QLabel("Preset", self), 2, 5)
+        filters_grid.addWidget(self.filter_preset_combo, 2, 6)
+        preset_buttons = QHBoxLayout()
+        preset_buttons.setContentsMargins(0, 0, 0, 0)
+        preset_buttons.setSpacing(4)
+        preset_buttons.addWidget(self.save_filter_preset_button)
+        preset_buttons.addWidget(self.delete_filter_preset_button)
+        preset_widget = QWidget(self)
+        preset_widget.setLayout(preset_buttons)
+        filters_grid.addWidget(preset_widget, 2, 7)
         layout.addLayout(filters_grid)
         self.summary_label = QLabel("", self)
         self.summary_label.setObjectName("PaneMeta")
@@ -391,6 +424,9 @@ class SourcesPane(QWidget):
         self.source_focus_button = QPushButton("Focus In Workbench", self)
         self.source_focus_button.setEnabled(False)
         source_row.addWidget(self.source_focus_button, 0)
+        self.source_edit_button = QPushButton("Edit Source", self)
+        self.source_edit_button.setEnabled(False)
+        source_row.addWidget(self.source_edit_button, 0)
         layout.addLayout(source_row)
         self.table = QTableView(self)
         self.table.setAlternatingRowColors(True)

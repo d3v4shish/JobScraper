@@ -108,11 +108,15 @@ def render_analytics_html(payload: Dict[str, Any]) -> str:
       <div class="accent">
         <h1>Analytics</h1>
         <div class="chips">
+          <span class="chip">scope {html.escape(str(payload.get('scope_label') or 'Current filters'))}</span>
+          <span class="chip">sample {int(payload.get('sample_size') or totals.get('total') or 0)}</span>
+          <span class="chip">refreshed {html.escape(format_ts(payload.get('refreshed_at')))}</span>
           <span class="chip">total {int(totals.get('total') or 0)}</span>
           <span class="chip">open {int(totals.get('open_total') or 0)}</span>
           <span class="chip">remote {int(totals.get('remote_total') or 0)}</span>
           <span class="chip">closed {int(totals.get('closed_total') or 0)}</span>
         </div>
+        <div class="meta">filters: {html.escape(str(payload.get('active_filters') or 'all jobs'))}</div>
       </div>
       <div class="section"><h2>Languages</h2>{items((payload.get('stack') or {}).get('language') or [])}</div>
       <div class="section"><h2>Domains</h2>{items((payload.get('stack') or {}).get('domain') or [])}</div>
@@ -159,7 +163,10 @@ def render_roadmap_html(payload: Dict[str, Any]) -> str:
         <div class="chips">
           <span class="chip">scope {html.escape(str(payload.get('scope') or payload.get('scope_label') or ''))}</span>
           <span class="chip">jobs {int(payload.get('job_count') or 0)}</span>
+          <span class="chip">sample {int(payload.get('sample_size') or payload.get('job_count') or 0)}</span>
+          <span class="chip">refreshed {html.escape(format_ts(payload.get('refreshed_at')))}</span>
         </div>
+        <div class="meta">filters: {html.escape(str(payload.get('active_filters') or 'all jobs'))}</div>
       </div>
       <div class="section"><h2>Dominant Topics</h2>{render_counter(overview.get('topics') or [])}</div>
       <div class="section"><h2>Languages</h2>{render_counter(overview.get('languages') or [])}</div>
